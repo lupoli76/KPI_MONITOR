@@ -1,0 +1,2039 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KPI Monitor v4.2 — Sirti @ TIM</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* TIM Brand */
+  --blue:#0066CC; --blue-d:#004C99; --blue-l:#3385D6;
+  --red:#E60028; --red-d:#B80021;
+  /* Neutrals */
+  --w:#fff; --g50:#f9fafb; --g100:#f3f4f6; --g200:#e5e7eb;
+  --g300:#d1d5db; --g400:#9ca3af; --g500:#6b7280;
+  --g600:#4b5563; --g700:#374151; --g800:#1f2937; --g900:#111827;
+  /* Semantic */
+  --bg:#eff2f7; --card:#fff; --border:#dde3ec; --border2:#c5cedc;
+  /* Groups */
+  --sirti:#0066CC; --sirti-bg:#dbeafe; --sirti-t:#1e40af;
+  --huawei:#E60028; --huawei-bg:#fde8ec; --huawei-t:#9b1c1c;
+  /* Status */
+  --green:#15803d; --green-bg:#dcfce7; --green-t:#166534;
+  --amber:#b45309; --amber-bg:#fef3c7; --amber-t:#92400e;
+  --purple:#7c3aed; --purple-bg:#ede9fe;
+  --red2:#dc2626; --red2-bg:#fee2e2;
+  /* Shadows */
+  --sh1:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --sh2:0 4px 16px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.04);
+  --sh3:0 10px 32px rgba(0,0,0,.12);
+  --r:12px; --r2:7px; --r3:5px;
+  --font:"Inter",sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:var(--bg);color:var(--g800);min-height:100vh;font-size:13.5px;line-height:1.5;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--g100);}
+::-webkit-scrollbar-thumb{background:var(--g300);border-radius:3px;}
+
+/* ── JS TOOLTIP (posizionato nel body, no clipping) ── */
+#kpi-tip{
+  position:fixed;z-index:99999;pointer-events:none;
+  background:rgba(17,24,39,.96);color:#f1f5f9;
+  font-size:.72rem;line-height:1.5;
+  padding:.45rem .65rem;border-radius:8px;
+  box-shadow:0 8px 24px rgba(0,0,0,.35);
+  max-width:260px;white-space:pre-line;
+  opacity:0;transition:opacity .15s;
+  font-family:var(--font);font-weight:400;
+  border:1px solid rgba(255,255,255,.08);
+}
+#kpi-tip.show{opacity:1;}
+[data-tip]{cursor:help;}
+
+/* ── TOP BAR ── */
+.tb{
+  position:sticky;top:0;z-index:200;
+  background:var(--w);
+  border-bottom:2px solid var(--border);
+  box-shadow:var(--sh2);
+  padding:.6rem 1.5rem;
+  display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;
+}
+.brand{display:flex;align-items:center;gap:.6rem;}
+.brand-box{
+  width:36px;height:36px;
+  background:linear-gradient(135deg,var(--blue) 0%,var(--blue-d) 100%);
+  border-radius:9px;box-shadow:0 2px 8px rgba(0,102,204,.35);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;color:#fff;font-size:1.05rem;flex-shrink:0;
+  letter-spacing:-.02em;
+}
+.brand-name{font-size:.94rem;font-weight:700;color:var(--blue);line-height:1.15;}
+.brand-desc{font-size:.64rem;color:var(--g400);font-weight:400;}
+.tb-div{width:1px;height:28px;background:var(--border);margin:0 .1rem;}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;}
+.badge{
+  display:inline-flex;align-items:center;gap:.25rem;
+  padding:.2rem .6rem;border-radius:20px;
+  font-size:.68rem;font-weight:500;
+  border:1px solid var(--border2);color:var(--g500);
+  background:var(--g50);white-space:nowrap;
+}
+.badge-b{color:var(--blue);border-color:rgba(0,102,204,.3);background:rgba(0,102,204,.06);}
+.badge-g{color:var(--green);border-color:rgba(21,128,61,.3);background:rgba(21,128,61,.06);}
+
+/* ── BUTTONS ── */
+.btn{
+  padding:.38rem .9rem;border-radius:var(--r3);border:none;
+  cursor:pointer;font-family:var(--font);font-size:.76rem;font-weight:600;
+  transition:all .15s;white-space:nowrap;line-height:1.4;
+}
+.btn-p{background:linear-gradient(135deg,var(--blue),var(--blue-d));color:#fff;box-shadow:0 2px 6px rgba(0,102,204,.3);}
+.btn-p:hover{box-shadow:0 4px 12px rgba(0,102,204,.4);transform:translateY(-1px);}
+.btn-g{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;box-shadow:0 2px 6px rgba(22,163,74,.3);}
+.btn-g:hover{box-shadow:0 4px 12px rgba(22,163,74,.4);transform:translateY(-1px);}
+.btn-gh{
+  background:var(--w);border:1.5px solid var(--border2);
+  color:var(--g600);box-shadow:var(--sh1);
+}
+.btn-gh:hover{border-color:var(--blue);color:var(--blue);}
+.btn-sm{padding:.26rem .6rem;font-size:.7rem;}
+
+/* ── LAYOUT ── */
+.main{max-width:1500px;margin:0 auto;padding:.9rem 1.25rem 3rem;}
+
+/* ── SECTION HEADER ── */
+.sh{
+  display:flex;align-items:center;gap:.55rem;
+  margin:.85rem 0 .5rem;
+  font-size:.68rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;color:var(--g400);
+}
+.sh::after{content:"";flex:1;height:1px;background:var(--border);}
+.sh-info{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:14px;height:14px;border-radius:50%;
+  background:var(--blue);color:#fff;
+  font-size:.55rem;font-weight:700;cursor:help;flex-shrink:0;
+}
+
+/* ── CARD ── */
+.card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);box-shadow:var(--sh1);
+}
+.card-hdr{
+  padding:.65rem 1rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;
+}
+.card-hdr-title{font-size:.8rem;font-weight:700;color:var(--g700);}
+.cp{padding:.8rem 1rem;}
+
+/* ── PILLS ── */
+.pills{display:flex;flex-wrap:wrap;gap:.3rem;}
+.pill{
+  padding:.26rem .65rem;border-radius:20px;
+  border:1.5px solid var(--border2);background:var(--w);
+  color:var(--g500);font-size:.7rem;font-weight:600;cursor:pointer;transition:all .15s;
+}
+.pill:hover{border-color:var(--blue);color:var(--blue);background:rgba(0,102,204,.04);}
+.pill.on{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 2px 6px rgba(0,102,204,.25);}
+
+/* ── PERIOD ── */
+.pb{display:flex;flex-wrap:wrap;gap:.55rem;align-items:flex-end;padding:.65rem 1rem;}
+.pctrl{display:flex;flex-direction:column;gap:.2rem;}
+.pctrl-l{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);}
+.sinput,input[type=date]{
+  background:var(--g50);border:1.5px solid var(--border2);border-radius:var(--r3);
+  color:var(--g800);font-family:var(--font);font-size:.76rem;padding:.3rem .55rem;outline:none;
+}
+.sinput:focus,input[type=date]:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,102,204,.1);}
+
+/* ── PEOPLE CHIPS ── */
+.pw{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;padding:.65rem 1rem;}
+.gtag{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--g400);}
+.pchip{
+  display:inline-flex;align-items:center;gap:.32rem;
+  padding:.3rem .75rem .3rem .45rem;border-radius:20px;
+  border:1.5px solid var(--border2);background:var(--g50);
+  cursor:pointer;font-size:.74rem;font-weight:600;
+  transition:all .15s;user-select:none;
+}
+.pchip .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.pchip.as{border-color:var(--blue);background:var(--sirti-bg);color:var(--sirti-t);}
+.pchip.ah{border-color:var(--red);background:var(--huawei-bg);color:var(--huawei-t);}
+.pchip:not(.as):not(.ah):not(.at){opacity:.32;filter:grayscale(.5);}
+.addchip{
+  padding:.3rem .7rem;border-radius:20px;
+  border:1.5px dashed var(--g300);background:transparent;
+  color:var(--g400);font-size:.7rem;cursor:pointer;transition:all .15s;
+}
+.addchip:hover{border-color:var(--green);color:var(--green);}
+
+/* ── KPI BOXES ── */
+.kg{display:grid;grid-template-columns:repeat(auto-fill,minmax(115px,1fr));gap:.5rem;padding:.75rem 1rem;}
+.kbox{
+  background:var(--g50);border:1.5px solid var(--border);border-radius:var(--r2);
+  padding:.6rem .75rem;position:relative;overflow:visible;
+  transition:all .18s;cursor:default;
+}
+.kbox:hover{border-color:var(--blue);box-shadow:0 3px 10px rgba(0,102,204,.12);transform:translateY(-1px);}
+.kst{height:3px;border-radius:2px;margin-bottom:.45rem;}
+.kv{font-size:1.42rem;font-weight:800;line-height:1;letter-spacing:-.02em;}
+.kl{font-size:.6rem;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.06em;margin-top:.18rem;}
+.ks{font-size:.65rem;color:var(--g400);margin-top:.08rem;}
+.cb .kst{background:var(--blue);}    .cb .kv{color:var(--blue);}
+.cg .kst{background:var(--green);}   .cg .kv{color:var(--green);}
+.ca .kst{background:var(--amber);}   .ca .kv{color:var(--amber);}
+.cr .kst{background:var(--red2);}    .cr .kv{color:var(--red2);}
+.cp2 .kst{background:var(--purple);} .cp2 .kv{color:var(--purple);}
+
+/* ── PERSON PANELS ── */
+.pp{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;padding:.75rem 1rem;}
+.ppanel{background:var(--w);border:1.5px solid var(--border);border-radius:var(--r2);overflow:visible;}
+.pph{display:flex;align-items:center;gap:.38rem;padding:.5rem .75rem;border-bottom:1px solid var(--border);font-size:.8rem;font-weight:700;}
+.pptag{font-size:.58rem;font-weight:700;text-transform:uppercase;margin-left:auto;padding:.1rem .32rem;border-radius:3px;}
+.ts{background:var(--sirti-bg);color:var(--sirti-t);}
+.th{background:var(--huawei-bg);color:var(--huawei-t);}
+.tt{background:#D1FAE5;color:#1A5C38;}
+.at{border-color:#15803d!important;background:#dcfce7!important;color:#14532d!important;font-weight:700!important;}
+.tt{background:#D1FAE5;color:#1A5C38;}
+.ppb{padding:.5rem .75rem;}
+.prow{display:flex;align-items:center;justify-content:space-between;padding:.2rem 0;border-bottom:1px solid var(--g100);gap:.35rem;}
+.prow:last-child{border:none;}
+.prl{font-size:.68rem;color:var(--g500);white-space:nowrap;}
+.prbar{flex:1;background:var(--g100);border-radius:2px;height:5px;overflow:hidden;}
+.prfill{height:5px;border-radius:2px;transition:width .4s;}
+.prv{font-size:.76rem;font-weight:700;min-width:34px;text-align:right;white-space:nowrap;}
+
+/* ── BARRE CONFRONTO ── */
+.bg2{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:.55rem .9rem;padding:.75rem 1rem;}
+.bcard{background:var(--g50);border:1px solid var(--border);border-radius:var(--r3);padding:.55rem .65rem;}
+.bil{font-size:.7rem;font-weight:700;color:var(--g600);margin-bottom:.38rem;display:flex;align-items:center;gap:.3rem;}
+.brow{display:flex;align-items:center;gap:.45rem;margin-bottom:4px;}
+.bnm{font-size:.68rem;font-weight:600;width:85px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.btr{flex:1;background:var(--g200);border-radius:3px;height:8px;overflow:hidden;}
+.bfi{height:8px;border-radius:3px;transition:width .5s;}
+.bvl{font-size:.68rem;font-weight:700;width:46px;text-align:right;flex-shrink:0;}
+
+/* ── TIMELINE ── */
+.tlw{padding:.75rem 1rem;}
+.tlm{display:flex;flex-direction:column;gap:.85rem;}
+.tlmh{font-size:.7rem;font-weight:700;color:var(--g600);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.06em;}
+.tld-row{display:flex;flex-wrap:wrap;gap:3px;}
+.tld{
+  width:24px;height:24px;border-radius:4px;
+  background:var(--g100);border:1px solid var(--g200);
+  cursor:pointer;transition:all .15s;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.5rem;color:var(--g400);font-weight:500;
+}
+.tld.h{border-color:rgba(0,102,204,.35);}
+.tld.n1{background:rgba(0,102,204,.12);}
+.tld.n2{background:rgba(0,102,204,.26);}
+.tld.n3{background:rgba(0,102,204,.42);}
+.tld.n4{background:rgba(0,102,204,.62);}
+.tld.n5{background:var(--blue);color:#fff;}
+.tl-leg{display:flex;gap:.4rem;align-items:center;font-size:.63rem;color:var(--g400);margin-top:.5rem;flex-wrap:wrap;}
+.tl-lb{width:14px;height:9px;border-radius:2px;display:inline-block;border:1px solid var(--g200);}
+
+/* ── TABELLA ── */
+.tf{display:flex;flex-wrap:wrap;gap:.35rem;padding:.65rem 1rem .4rem;}
+.tf input,.tf select{
+  background:var(--g50);border:1.5px solid var(--border2);border-radius:var(--r3);
+  color:var(--g800);font-size:.74rem;padding:.3rem .5rem;outline:none;font-family:var(--font);
+}
+.tf input:focus,.tf select:focus{border-color:var(--blue);}
+.tc{font-size:.68rem;color:var(--g400);padding:0 1rem .35rem;}
+.tw{overflow-x:auto;max-height:440px;overflow-y:auto;}
+table{width:100%;border-collapse:collapse;font-size:.74rem;}
+thead th{
+  background:linear-gradient(to bottom,var(--g100),var(--g100));
+  color:var(--g600);font-weight:700;font-size:.62rem;
+  text-transform:uppercase;letter-spacing:.06em;
+  padding:.48rem .6rem;text-align:left;
+  border-bottom:2px solid var(--border2);
+  position:sticky;top:0;z-index:1;white-space:nowrap;cursor:pointer;user-select:none;
+}
+thead th:hover{color:var(--blue);background:rgba(0,102,204,.04);}
+thead th.asc::after{content:" ↑";color:var(--blue);}
+thead th.desc::after{content:" ↓";color:var(--blue);}
+tbody td{padding:.38rem .6rem;border-bottom:1px solid var(--g100);vertical-align:middle;}
+tbody tr:hover{background:rgba(0,102,204,.03);}
+tbody tr:nth-child(even){background:rgba(0,0,0,.01);}
+.bg{display:inline-block;padding:.1rem .38rem;border-radius:4px;font-size:.62rem;font-weight:700;}
+.bgs{background:var(--sirti-bg);color:var(--sirti-t);}
+.bgh{background:var(--huawei-bg);color:var(--huawei-t);}
+.bgr{background:#dbeafe;color:#1e40af;}
+.bgw{background:var(--purple-bg);color:var(--purple);}
+.bgch{background:var(--green-bg);color:var(--green-t);}
+.bgan{background:var(--red2-bg);color:var(--red2);}
+.bgpn{background:var(--amber-bg);color:var(--amber-t);}
+.bgug{background:var(--red2-bg);color:var(--red2);}
+.bgst{background:var(--g100);color:var(--g500);}
+.ity{color:var(--green);font-weight:700;}
+.itn{color:var(--red2);font-weight:700;}
+
+/* ── LEGENDA ── */
+.leg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:.28rem .65rem;margin-top:.4rem;}
+.leg-r{display:flex;align-items:baseline;gap:.3rem;font-size:.7rem;}
+.leg-k{font-weight:700;color:var(--blue);min-width:70px;flex-shrink:0;}
+.leg-v{color:var(--g600);}
+
+/* ── SEZIONI TAB ── */
+.sn{display:flex;gap:0;border-bottom:2px solid var(--border);margin:.6rem 0 .7rem;}
+.stab{
+  padding:.42rem .9rem;background:none;border:none;cursor:pointer;
+  color:var(--g500);font-size:.76rem;font-weight:600;
+  border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s;
+}
+.stab:hover{color:var(--blue);}
+.stab.on{color:var(--blue);border-bottom-color:var(--blue);}
+.spane{display:none;}
+.spane.on{display:block;}
+
+/* ── GRAFICI ── */
+.chart-wrap{padding:.65rem 1rem 1rem;}
+.chart-type-bar{display:flex;align-items:end;gap:4px;height:180px;padding-bottom:20px;position:relative;}
+.chart-svg-wrap{overflow-x:auto;background:var(--g50);border-radius:var(--r3);border:1px solid var(--border);}
+
+/* ── UPLOAD ── */
+.uz{
+  border:2px dashed var(--border2);border-radius:var(--r);
+  padding:3rem 2rem;text-align:center;cursor:pointer;transition:all .2s;
+}
+.uz:hover,.uz.drag{border-color:var(--blue);background:rgba(0,102,204,.03);}
+
+/* ── MODAL ── */
+.movo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9998;align-items:center;justify-content:center;}
+.movo.open{display:flex;}
+.modal{
+  background:var(--w);border:1px solid var(--border);
+  border-radius:var(--r);padding:1.5rem;width:340px;max-width:96vw;
+  box-shadow:var(--sh3);
+}
+.modal h3{font-size:.9rem;font-weight:700;margin-bottom:.9rem;}
+.mf{margin-bottom:.65rem;}
+.mf label{display:block;font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g400);margin-bottom:.24rem;}
+.mf input,.mf select{
+  width:100%;background:var(--g50);border:1.5px solid var(--border2);
+  border-radius:var(--r3);color:var(--g800);font-size:.82rem;padding:.45rem .65rem;outline:none;
+}
+.mbtns{display:flex;gap:.45rem;justify-content:flex-end;margin-top:.9rem;}
+
+/* ── MISC ── */
+.empty{text-align:center;padding:2.5rem;color:var(--g400);}
+.footer{text-align:center;padding:1.5rem;font-size:.63rem;color:var(--g400);border-top:1px solid var(--border);margin-top:2rem;}
+.info-pill{display:inline-flex;align-items:center;gap:.18rem;padding:.06rem .35rem;border-radius:10px;font-size:.6rem;font-weight:700;background:rgba(0,102,204,.1);color:var(--blue);border:1px solid rgba(0,102,204,.2);cursor:help;}
+
+@media(max-width:650px){.kg{grid-template-columns:repeat(3,1fr);}.pp{grid-template-columns:1fr 1fr;}.bg2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- JS TOOLTIP -->
+<div id="kpi-tip"></div>
+
+<!-- TOP BAR -->
+<div class="tb">
+  <div class="brand">
+    <div class="brand-box">K</div>
+    <div>
+      <div class="brand-name">KPI Monitor</div>
+      <div class="brand-desc">Sirti @ TIM — Gestione Commessa</div>
+    </div>
+  </div>
+  <div class="tb-div"></div>
+  <span class="badge badge-b" id="tbPeriod"
+    data-tip="Periodo di analisi corrente.&#10;Cambialo nella sezione Periodo sotto.">Tutti i periodi</span>
+  <span class="badge badge-g" id="tbLive"
+    data-tip="Numero di SdF nel periodo&#10;per le risorse selezionate.">— SdF</span>
+  <div class="tb-right">
+    <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none" onchange="onFileChange(this)">
+    <button class="btn btn-gh btn-sm" onclick="exportCSV()"
+      data-tip="Esporta i dati filtrati in CSV.&#10;Apri con Excel o LibreOffice.">📄 CSV</button>
+    <button class="btn btn-g btn-sm" onclick="exportExcel()"
+      data-tip="Esporta report completo Excel&#10;con 5 fogli, colori enterprise,&#10;formattazione condizionale.&#10;Pronto per invio email.">📊 Excel Report</button>
+    <button class="btn btn-p" onclick="document.getElementById('fileInput').click()"
+      data-tip="Carica il file Excel SdF.&#10;Fogli: SDF Centro 2025&#10;e SDF Centro+SUD 2026.">📂 Carica Excel</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- UPLOAD -->
+  <div id="uploadSection">
+    <div class="sh">🚀 Avvio <span class="sh-info" data-tip="Carica il file Excel SdF per avviare l'analisi.&#10;Il tool rileva automaticamente i fogli&#10;e filtra le risorse preconfigurate.">i</span></div>
+    <div class="uz" id="dropZone" onclick="document.getElementById('fileInput').click()">
+      <div style="font-size:2rem;margin-bottom:.5rem;">📊</div>
+      <div style="font-size:.85rem;color:var(--g500);">
+        <strong style="color:var(--blue);">Trascina l'Excel SdF o clicca per selezionare</strong><br><br>
+        Fogli: <code>SDF Centro 2025</code> / <code>SDF Centro+SUD 2026</code><br>
+        Header riga 3 · Colonna G = Lavorante
+      </div>
+    </div>
+    <div class="sh" style="margin-top:.75rem;">👥 Risorse preconfigurate <span class="sh-info" data-tip="Le risorse vengono cercate nella colonna&#10;Lavorante dell'Excel. Il nome deve comparire&#10;nella cella (anche parzialmente).">i</span></div>
+    <div class="card cp">
+      <div style="display:flex;gap:2rem;flex-wrap:wrap;">
+        <div>
+          <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);margin-bottom:.4rem;">🔵 Sirti</div>
+          <div style="display:flex;gap:.35rem;flex-wrap:wrap;">
+            <span class="pchip as"><span class="dot" style="background:var(--sirti);"></span>LUPOLI</span>
+            <span class="pchip as"><span class="dot" style="background:var(--sirti);"></span>FEROCI</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--red);margin-bottom:.4rem;">🔴 Huawei</div>
+          <div style="display:flex;gap:.35rem;flex-wrap:wrap;">
+            <span class="pchip ah"><span class="dot" style="background:var(--huawei);"></span>CECCHETTO</span>
+            <span class="pchip ah"><span class="dot" style="background:var(--huawei);"></span>GENTILE</span>
+            <span class="pchip ah"><span class="dot" style="background:var(--huawei);"></span>IMPERATORI</span>
+            <span class="pchip ah"><span class="dot" style="background:var(--huawei);"></span>TENUTA</span>
+          </div>
+        </div>
+        <div><div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#1A5C38;margin-bottom:.4rem;">🟢 TIM</div>
+          <div style="display:flex;gap:.35rem;flex-wrap:wrap;">
+            <span class="pchip at"><span class="dot" style="background:#16a34a;"></span>ANGOTTI</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard" style="display:none;">
+
+    <div class="sh">👥 Risorse monitorate <span class="sh-info" data-tip="Clicca su un chip per attivare/disattivare&#10;una risorsa dall'analisi.&#10;🔵 Sirti  🔴 Huawei  ⚪ Altro">i</span></div>
+    <div class="card" style="margin-bottom:.55rem;"><div class="pw" id="peopleBar"></div></div>
+
+    <div class="sh">📅 Periodo di analisi <span class="sh-info" data-tip="I filtri si applicano alla Data Esito&#10;o alla Data Mail se Esito non disponibile.&#10;Combinabile con filtri Tipo/Priorità/Esito.">i</span></div>
+    <div class="card" style="margin-bottom:.7rem;">
+      <div class="pb">
+        <div class="pctrl">
+          <span class="pctrl-l">Vista rapida</span>
+          <div class="pills" id="periodPills">
+            <button class="pill on" data-p="all"    onclick="setPeriod('all',this)"
+              data-tip="Tutti i record caricati&#10;senza filtro temporale.">Tutti</button>
+            <button class="pill"    data-p="today"  onclick="setPeriod('today',this)"
+              data-tip="Solo il giorno corrente.&#10;Utile per consuntivi giornalieri.">Oggi</button>
+            <button class="pill"    data-p="week"   onclick="setPeriod('week',this)"
+              data-tip="Settimana corrente&#10;(lunedì - domenica).">Settimana</button>
+            <button class="pill"    data-p="month"  onclick="setPeriod('month',this)"
+              data-tip="Mese corrente&#10;(1° - ultimo giorno).">Mese</button>
+            <button class="pill"    data-p="y2025"  onclick="setPeriod('y2025',this)"
+              data-tip="Tutti i SdF del 2025&#10;(foglio SDF Centro 2025).">2025</button>
+            <button class="pill"    data-p="y2026"  onclick="setPeriod('y2026',this)"
+              data-tip="Tutti i SdF del 2026&#10;(foglio SDF Centro+SUD 2026).">2026</button>
+            <button class="pill"    data-p="custom" onclick="setPeriod('custom',this)"
+              data-tip="Seleziona un intervallo&#10;di date personalizzato.">Personalizzato ▾</button>
+          </div>
+        </div>
+        <div class="pctrl">
+          <span class="pctrl-l">Modalità giorni <span class="sh-info" data-tip="Solare: giorni di calendario tra Mail e Esito.&#10;Lavorativo: esclude sab, dom e festivi italiani&#10;(Capodanno, Epifania, Pasqua+Lun, 25 Apr,&#10;1 Mag, 2 Giu, Ferragosto, Ognissanti,&#10;Immacolata, Natale, S.Stefano).">i</span></span>
+          <div class="pills" id="dayModePills">
+            <button class="pill on" onclick="setDayMode('solar',this)"
+              data-tip="Giorni di calendario&#10;(inclusi sab, dom, festivi).">☀ Solari</button>
+            <button class="pill" onclick="setDayMode('work',this)"
+              data-tip="Giorni lavorativi effettivi&#10;(esclusi sab, dom, festivi IT).">💼 Lavorativi</button>
+          </div>
+        </div>
+        <div id="customDates" style="display:none;gap:.35rem;align-items:center;">
+          <span class="pctrl-l">Da</span>
+          <input type="date" id="dateFrom" onchange="applyCustom()"
+            data-tip="Data inizio periodo&#10;personalizzato.">
+          <span style="color:var(--g400);">→</span>
+          <input type="date" id="dateTo" onchange="applyCustom()"
+            data-tip="Data fine periodo&#10;personalizzato.">
+        </div>
+        <div class="pctrl">
+          <span class="pctrl-l">Tipo <span class="sh-info" data-tip="RETAIL = fattibilità per clienti finali&#10;WHOLESALE = fattibilità per operatori TLC&#10;(NNI/IRP - National Network Interconnection)">i</span></span>
+          <select class="sinput" id="fTipo" onchange="render()">
+            <option value="">Tutti</option><option>RETAIL</option><option>WHOLESALE</option>
+          </select>
+        </div>
+        <div class="pctrl">
+          <span class="pctrl-l">Priorità <span class="sh-info" data-tip="URGENTE = timeline di risposta ridotta&#10;STANDARD = timeline normale&#10;(assegnata dal sistema NNI)">i</span></span>
+          <select class="sinput" id="fPrior" onchange="render()">
+            <option value="">Tutte</option><option>URGENTE</option><option>STANDARD</option>
+          </select>
+        </div>
+        <div class="pctrl">
+          <span class="pctrl-l">Esito <span class="sh-info" data-tip="CHIUSO = completato con risposta&#10;ANNULLATO = cancellato prima della chiusura&#10;altro = ancora in lavorazione">i</span></span>
+          <select class="sinput" id="fEsito" onchange="render()">
+            <option value="">Tutti</option><option>CHIUSO</option><option>ANNULLATO</option>
+          </select>
+        </div>
+        <button class="btn btn-gh btn-sm" style="margin-top:1.1rem;margin-left:auto;" onclick="resetF()"
+          data-tip="Azzera tutti i filtri&#10;e torna alla vista completa.">↺ Reset</button>
+
+      </div>
+
+      <!-- LEGENDA INTEGRATA -->
+      <div style="background:var(--g50);border-top:1px solid var(--border);padding:.6rem 1rem;">
+        <div style="font-size:.68rem;font-weight:700;color:var(--g600);margin-bottom:.32rem;">
+          📖 Legenda abbreviazioni
+          <span class="info-pill" data-tip="Hover su ogni voce&#10;per la spiegazione completa.">ℹ</span>
+        </div>
+        <div class="leg-grid">
+          <div class="leg-r" data-tip="S = Sirti S.p.A.&#10;H = Huawei Technologies&#10;(azienda di appartenenza del lavorante)"><span class="leg-k">S / H</span><span class="leg-v">Sirti / Huawei</span></div>
+          <div class="leg-r" data-tip="R = RETAIL: fattibilità per clienti finali diretti&#10;W = WHOLESALE: fattibilità per operatori TLC&#10;tramite interfacce NNI o IRP"><span class="leg-k">R / W</span><span class="leg-v">Retail / Wholesale</span></div>
+          <div class="leg-r" data-tip="URG = Priorità URGENTE&#10;(timeline di risposta ridotta, priorità massima)&#10;STD = Priorità STANDARD (normale)"><span class="leg-k">URG / STD</span><span class="leg-v">Urgente / Standard</span></div>
+          <div class="leg-r" data-tip="Gg = Giorni di lavorazione&#10;= Data Esito - Data Mail&#10;Indica la velocità di risposta"><span class="leg-k">Gg</span><span class="leg-v">Giorni Mail→Esito</span></div>
+          <div class="leg-r" data-tip="T. = In Tempo rispetto alla scadenza&#10;✔ = SdF chiuso ENTRO la data di scadenza&#10;✖ = SdF chiuso DOPO la data di scadenza"><span class="leg-k">T. ✔/✖</span><span class="leg-v">In Tempo / Fuori scadenza</span></div>
+          <div class="leg-r" data-tip="D. = Interventi Dimensionali&#10;Richieste di variazione su apparati o circuiti DWDM&#10;Indicatore di complessità tecnica"><span class="leg-k">D. / I.</span><span class="leg-v">Int.Dim. / Infrastrutturali</span></div>
+          <div class="leg-r" data-tip="% SdF chiusi entro la data di scadenza&#10;= In Tempo / Tot. con scadenza × 100&#10;Target aziendale: >90%"><span class="leg-k">% Scad.</span><span class="leg-v">% SdF entro scadenza</span></div>
+          <div class="leg-r" data-tip="Media dei giorni di lavorazione&#10;= MEDIA(Data Esito - Data Mail)&#10;Più basso = risposta più veloce"><span class="leg-k">Tempo Med.</span><span class="leg-v">Media giorni lavorazione</span></div>
+          <div class="leg-r" data-tip="SdF = Studio di Fattibilità&#10;Documento tecnico che valuta la possibilità&#10;di realizzare un collegamento in fibra ottica"><span class="leg-k">SdF</span><span class="leg-v">Studio di Fattibilità</span></div>
+          <div class="leg-r" data-tip="Mail = Data invio mail SdF&#10;Corrisponde alla data di avvio della lavorazione&#10;da parte del lavorante"><span class="leg-k">Mail</span><span class="leg-v">Data avvio lavorazione</span></div>
+          <div class="leg-r" data-tip="CHIUSO = SdF completato con risposta&#10;al cliente o all'operatore&#10;(esito positivo o negativo)"><span class="leg-k">CHIUSO</span><span class="leg-v">SdF completato</span></div>
+          <div class="leg-r" data-tip="ANNULLATO = SdF cancellato&#10;prima della chiusura (stornato).&#10;Non conta nel tempo medio."><span class="leg-k">ANNULLATO</span><span class="leg-v">SdF cancellato/stornato</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sh">📊 KPI Aggregati <span class="sh-info" data-tip="Indicatori chiave per le risorse attive&#10;nel periodo selezionato.&#10;Hover su ogni box per la formula.">i</span></div>
+    <div class="card" style="margin-bottom:.6rem;"><div class="kg" id="kpiGlobal"></div></div>
+
+    <!-- SEZIONI -->
+    <div class="sn">
+      <button class="stab on" onclick="showSec('persone',this)"
+        data-tip="Schede individuali per risorsa&#10;con KPI, barre relative&#10;e indicatori di performance">👤 Per Persona</button>
+      <button class="stab"    onclick="showSec('grafici',this)"
+        data-tip="Grafici SVG: colonne, radar&#10;e distribuzione % tra le risorse.&#10;3 modalità di visualizzazione.">📈 Grafici</button>
+      <button class="stab"    onclick="showSec('confronto',this)"
+        data-tip="Barre affiancate per ogni metrica&#10;— confronto diretto tra tutte&#10;le risorse attive.">📊 Confronto</button>
+      <button class="stab"    onclick="showSec('timeline',this)"
+        data-tip="Heatmap giorni per mese.&#10;Intensità colore = numero SdF&#10;completati in quel giorno.">📅 Timeline</button>
+      <button class="stab"    onclick="showSec('tabella',this)"
+        data-tip="Tabella completa con tutti i SdF.&#10;Filtrabile, ordinabile, ricercabile.&#10;Esportabile in CSV o Excel.">📋 Dettaglio SdF</button>
+    </div>
+
+    <!-- PER PERSONA -->
+    <div class="spane on" id="sec-persone">
+      <div class="card"><div class="pp" id="personPanels"></div></div>
+    </div>
+
+    <!-- GRAFICI -->
+    <div class="spane" id="sec-grafici">
+      <div class="card">
+        <div class="card-hdr">
+          <span class="card-hdr-title">📈 Analisi Visiva KPI</span>
+          <span class="info-pill" data-tip="Grafici SVG interattivi.&#10;Hover su barre, fette e punti&#10;per vedere i valori dettagliati.">ℹ info</span>
+          <div style="margin-left:auto;display:flex;gap:.3rem;" id="chartTypeBtns">
+            <button class="pill on" onclick="setChartType('bar',this)"
+              data-tip="Grafico a colonne per metrica.&#10;Confronto diretto tra risorse&#10;su 7 indicatori chiave.">📊 Colonne</button>
+
+            <button class="pill" onclick="setChartType('pie',this)"
+              data-tip="Distribuzione % tra le risorse&#10;su 4 metriche chiave.&#10;Proporzione sul totale gruppo.">🥧 Distribuzione</button>
+          </div>
+        </div>
+        <div class="chart-wrap" id="chartContainer"></div>
+      </div>
+    </div>
+
+    <!-- CONFRONTO -->
+    <div class="spane" id="sec-confronto">
+      <div class="card"><div class="bg2" id="barsGrid"></div></div>
+    </div>
+
+    <!-- TIMELINE -->
+    <div class="spane" id="sec-timeline">
+      <div class="card"><div class="tlw" id="tlWrap"></div></div>
+    </div>
+
+    <!-- TABELLA -->
+    <div class="spane" id="sec-tabella">
+      <div class="card">
+        <div class="tf">
+          <input type="text" id="tSearch" placeholder="🔎 SdF / cliente / comune…" oninput="renderTable()" style="min-width:190px;"
+            data-tip="Ricerca full-text su SdF,&#10;nome cliente e comune.">
+          <select id="tLav" onchange="renderTable()" data-tip="Filtra per singolo lavorante."><option value="">Tutti i lavoranti</option></select>
+          <select id="tGrp" onchange="renderTable()" data-tip="Filtra per azienda.&#10;Sirti o Huawei."><option value="">Tutti i gruppi</option><option value="sirti">🔵 Sirti</option><option value="huawei">🔴 Huawei</option></select>
+          <select id="tTipo" onchange="renderTable()" data-tip="Filtra per tipo SdF.&#10;RETAIL o WHOLESALE."><option value="">Tutti i tipi</option><option>RETAIL</option><option>WHOLESALE</option></select>
+          <select id="tEsito" onchange="renderTable()" data-tip="Filtra per esito lavorazione."><option value="">Tutti gli esiti</option><option>CHIUSO</option><option>ANNULLATO</option></select>
+          <select id="tPrior" onchange="renderTable()" data-tip="Filtra per priorità SdF.&#10;URGENTE o STANDARD."><option value="">Tutte le priorità</option><option>URGENTE</option><option>STANDARD</option></select>
+        </div>
+        <div class="tc" id="tCount"></div>
+        <div class="tw">
+          <table>
+            <thead><tr>
+              <th data-sc="anno"    onclick="sortBy('anno')"    data-tip="Anno SdF: 2025 o 2026&#10;(foglio Excel di provenienza)">Anno</th>
+              <th data-sc="id"      onclick="sortBy('id')"      data-tip="Numero pratica SdF&#10;es. SF2600957337/0">SdF</th>
+              <th data-sc="lavorante" onclick="sortBy('lavorante')" data-tip="Cognome della risorsa&#10;che ha gestito il SdF">Lavorante</th>
+              <th data-sc="gruppo"  onclick="sortBy('gruppo')"  data-tip="S = Sirti (blu)&#10;H = Huawei (rosso)">Grp</th>
+              <th data-sc="tipo"    onclick="sortBy('tipo')"    data-tip="R = RETAIL: cliente finale&#10;W = WHOLESALE: operatore NNI/IRP">Tipo</th>
+              <th data-sc="prov"    onclick="sortBy('prov')"    data-tip="Provincia sede cliente">Prov</th>
+              <th                                                data-tip="Comune sede del cliente&#10;o dell'installazione">Comune</th>
+              <th                                                data-tip="Ragione sociale del cliente&#10;o dell'operatore alternativo">Cliente</th>
+              <th data-sc="esito"   onclick="sortBy('esito')"   data-tip="CHIUSO = completato&#10;ANNULLATO = cancellato&#10;altro = in lavorazione">Esito</th>
+              <th data-sc="priorita" onclick="sortBy('priorita')" data-tip="URG = URGENTE (timeline ridotta)&#10;STD = STANDARD">Prior.</th>
+              <th data-sc="data_mail" onclick="sortBy('data_mail')" data-tip="Data invio mail SdF&#10;= avvio lavorazione&#10;(inizio conteggio giorni)">Mail</th>
+              <th data-sc="data_esito" onclick="sortBy('data_esito')" data-tip="Data chiusura/risposta&#10;= fine lavorazione&#10;(fine conteggio giorni)">Esito dt.</th>
+              <th data-sc="data_scadenza" onclick="sortBy('data_scadenza')" data-tip="Data limite richiesta dal cliente.&#10;Se Esito dt. &lt;= Scad. → In Tempo ✔">Scad.</th>
+              <th data-sc="tempo_gg" onclick="sortBy('tempo_gg')" data-tip="Giorni di lavorazione&#10;= Data Esito - Data Mail&#10;Più basso = risposta più rapida">Gg</th>
+              <th data-sc="in_tempo" onclick="sortBy('in_tempo')" data-tip="✔ = chiuso entro scadenza&#10;✖ = chiuso dopo scadenza&#10;— = scadenza non disponibile">T.</th>
+              <th data-sc="dim"     onclick="sortBy('dim')"     data-tip="D. = Interventi Dimensionali&#10;Variazioni su apparati / circuiti DWDM">D.</th>
+              <th data-sc="infra"   onclick="sortBy('infra')"   data-tip="I. = Interventi Infrastrutturali&#10;Lavori su infrastruttura fisica (DROP/posa)">I.</th>
+            </tr></thead>
+            <tbody id="tBody"></tbody>
+          </table>
+        </div>
+        <div style="padding:.35rem 1rem .45rem;font-size:.62rem;color:var(--g400);">
+          Grp: S=Sirti · H=Huawei &nbsp;|&nbsp; Tipo: R=Retail · W=Wholesale &nbsp;|&nbsp; T.=In Tempo ✔/✖ &nbsp;|&nbsp; D.=Int.Dim. &nbsp;|&nbsp; I.=Int.Infra.
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:.65rem;display:flex;gap:.35rem;flex-wrap:wrap;">
+      <button class="btn btn-gh btn-sm" onclick="openModal()"
+        data-tip="Aggiungi una risorsa al gruppo&#10;specificando nome e azienda.">+ Aggiungi risorsa</button>
+      <button class="btn btn-gh btn-sm" onclick="document.getElementById('fileInput').click()"
+        data-tip="Ricarica un nuovo file Excel&#10;mantenendo le impostazioni correnti.">🔄 Ricarica Excel</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="movo" id="movo">
+  <div class="modal">
+    <h3>➕ Aggiungi risorsa al gruppo</h3>
+    <div class="mf">
+      <label>Cognome / Nome (come appare nel file Excel)</label>
+      <input type="text" id="mName" placeholder="es. ROSSI" oninput="this.value=this.value.toUpperCase()">
+    </div>
+    <div class="mf">
+      <label>Azienda / Gruppo</label>
+      <select id="mGruppo">
+        <option value="sirti">🔵 Sirti</option>
+        <option value="huawei">🔴 Huawei</option>
+        <option value="altro">⚪ Altro</option>
+      </select>
+    </div>
+    <div class="mbtns">
+      <button class="btn btn-gh" onclick="closeModal()">Annulla</button>
+      <button class="btn btn-p" onclick="addPerson()">Aggiungi</button>
+    </div>
+  </div>
+</div>
+
+<div class="footer">KPI Monitor &nbsp;|&nbsp; Sirti @ TIM — Gestione Commessa &nbsp;|&nbsp; <strong>Sirti:</strong> Lupoli, Feroci &nbsp;|&nbsp; <strong>Huawei:</strong> Cecchetto, Gentile, Imperatori, Tenuta &nbsp;|&nbsp; <strong>TIM:</strong> Angotti</div>
+
+<script>
+// ═══ TOOLTIP JS (evita clipping da overflow) ═══
+(function(){
+  var tip=document.getElementById('kpi-tip');
+  var cur=null;
+  function show(el){
+    var t=el.getAttribute('data-tip');if(!t)return;
+    tip.textContent=t;tip.classList.add('show');cur=el;pos(el);
+  }
+  function hide(){tip.classList.remove('show');cur=null;}
+  function pos(el){
+    var r=el.getBoundingClientRect();
+    var tw=tip.offsetWidth,th=tip.offsetHeight;
+    var x=r.left+r.width/2-tw/2;
+    var y=r.top-th-8;
+    if(y<4)y=r.bottom+8;
+    if(x<4)x=4;
+    if(x+tw>window.innerWidth-4)x=window.innerWidth-tw-4;
+    tip.style.left=x+'px';tip.style.top=y+'px';
+  }
+  document.addEventListener('mouseover',function(e){
+    var el=e.target.closest('[data-tip]');
+    if(el&&el!==cur)show(el);else if(!el)hide();
+  });
+  document.addEventListener('mouseleave',function(){hide();},true);
+  document.addEventListener('scroll',function(){if(cur)pos(cur);},{passive:true});
+})();
+
+
+// ═══ PALETTE ENTERPRISE (colore distinto per risorsa) ═══
+var PMAP = {
+  'LUPOLI':    {fill:'#0066CC',stroke:'#004C99',light:'#DBEAFE',init:'L'},
+  'FEROCI':    {fill:'#38BDF8',stroke:'#0369A1',light:'#E0F2FE',init:'F'},
+  'CECCHETTO': {fill:'#DC2626',stroke:'#991B1B',light:'#FEE2E2',init:'C'},
+  'GENTILE':   {fill:'#EA7316',stroke:'#C2560E',light:'#FFEDD5',init:'G'},
+  'IMPERATORI':{fill:'#CA8A04',stroke:'#92660B',light:'#FEF9C3',init:'I'},
+  'TENUTA':    {fill:'#BE185D',stroke:'#9D174D',light:'#FCE7F3',init:'T'},
+  'ANGOTTI':   {fill:'#2D8B57',stroke:'#1A5C38',light:'#D1FAE5',init:'A'},
+};
+function PC(p,type){
+  var m=PMAP[p.name];
+  if(!m)m=p.gruppo==='sirti'?{fill:'#0066CC',stroke:'#004C99',light:'#DBEAFE',init:p.name[0]}:p.gruppo==='altro'?{fill:'#2D8B57',stroke:'#1A5C38',light:'#D1FAE5',init:p.name[0]}:{fill:'#DC2626',stroke:'#991B1B',light:'#FEE2E2',init:p.name[0]};
+  return type==='stroke'?m.stroke:type==='light'?m.light:type==='init'?(m.init||p.name[0]):m.fill;
+}
+function GC(p){if(p.gruppo==='altro')return '#2D8B57';return PC(p,'fill');}
+function GCa(p,a){return PC(p,'fill');}
+
+// ═══ STATO ═══
+var DATA=[],PEOPLE=[
+  {name:'LUPOLI',gruppo:'sirti'},{name:'FEROCI',gruppo:'sirti'},
+  {name:'ANGOTTI',gruppo:'altro'},
+  {name:'CECCHETTO',gruppo:'huawei'},{name:'GENTILE',gruppo:'huawei'},
+  {name:'IMPERATORI',gruppo:'huawei'},{name:'TENUTA',gruppo:'huawei'}
+];
+var ACTIVE=new Set(PEOPLE.map(function(p){return p.name;}));
+var PER={type:'all',from:null,to:null};
+var SRT={col:'data_mail',dir:'desc'};
+var CHART_TYPE='bar';
+var KPI_MODE='solare'; // 'solare' | 'lavorativo'
+var DAY_MODE='solar'; // 'solar' o 'work'
+
+
+// ═══ EXCEL LOAD ═══
+function onFileChange(inp){
+  var f=inp.files[0];if(!f)return;
+  var r=new FileReader();
+  r.onload=function(e){parseXL(e.target.result,f.name);};
+  r.readAsArrayBuffer(f);inp.value='';
+}
+function parseXL(ab,fname){
+  try{
+    var wb=XLSX.read(ab,{type:'array',cellDates:true});
+    var recs=[];
+    wb.SheetNames.forEach(function(sn){
+      var y=null;
+      if(sn.indexOf('2025')>=0)y='2025';
+      else if(sn.indexOf('2026')>=0)y='2026';
+      if(!y)return;
+      var rows=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,defval:''});
+      for(var ri=3;ri<rows.length;ri++){
+        var r=rows[ri];if(!r||!r[0])continue;
+        var lav=String(r[6]||'').trim().toUpperCase();
+        var mp=null;
+        PEOPLE.forEach(function(p){
+          if(!mp&&(lav.indexOf(p.name)>=0||p.name.indexOf(lav)>=0))mp=p;
+          if(!mp){lav.split(/\s+/).forEach(function(w){if(w.length>3&&!mp&&(p.name.indexOf(w)>=0||w.indexOf(p.name)>=0))mp=p;});}
+        });
+        if(!mp)continue;
+        function dv(i){
+          var v=r[i];if(!v&&v!==0)return null;
+          if(v instanceof Date)return v.toISOString().slice(0,10);
+          var s=String(v).trim();
+          if(s.match(/^\d{4}-\d{2}-\d{2}/))return s.slice(0,10);
+          var m2=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+          if(m2)return m2[3]+'-'+m2[2].padStart(2,'0')+'-'+m2[1].padStart(2,'0');
+          if(!isNaN(+s)&&+s>40000){try{var d=XLSX.SSF.parse_date_code(+s);return d.y+'-'+(d.m+'').padStart(2,'0')+'-'+(d.d+'').padStart(2,'0');}catch(e){}}
+          // Formato italiano: "15 gennaio 2026", "09 febbraio 2026" ecc.
+          var MESI_IT={'gennaio':'01','febbraio':'02','marzo':'03','aprile':'04',
+            'maggio':'05','giugno':'06','luglio':'07','agosto':'08',
+            'settembre':'09','ottobre':'10','novembre':'11','dicembre':'12'};
+          var itMatch=s.toLowerCase().match(/^(\d{1,2})\s+(\w+)\s*(\d{4})/);
+          if(itMatch&&MESI_IT[itMatch[2]]){
+            return itMatch[3]+'-'+MESI_IT[itMatch[2]]+'-'+itMatch[1].padStart(2,'0');
+          }
+          return s.length>3?s:null;
+        }
+        function iv(i){var v=parseInt(r[i]||0);return isNaN(v)?0:v;}
+        function sv(i){return String(r[i]||'').trim();}
+        var dm=dv(9),de=dv(10),ds=dv(2);
+        var tg=null,it=null;
+        if(dm&&de&&dm.match(/^\d{4}/)&&de.match(/^\d{4}/)){tg=Math.round((new Date(de)-new Date(dm))/864e5);var wd=workDays(dm,de);tg_lav=wd!==null?wd:tg;}
+        if(ds&&de&&ds.match(/^\d{4}/)&&de.match(/^\d{4}/))it=new Date(de)<=new Date(ds);
+        var esi=sv(8).toUpperCase();
+        var pri=sv(16).toUpperCase().indexOf('URG')>=0?'URGENTE':(sv(16)?'STANDARD':'');
+        recs.push({anno:y,id:sv(0),lavorante:mp.name,gruppo:mp.gruppo,tipo:sv(1).toUpperCase(),
+          prov:sv(3),comune:sv(4),cliente:sv(5),territorio:sv(7),esito:esi,
+          data_mail:dm,data_esito:de,data_scadenza:ds,
+          dim:iv(11),infra:iv(12),chiusura:sv(13),priorita:pri,tempo_gg:tg,tempo_lav:tg_lav!==undefined?tg_lav:null,tempo_wd:workDays(dm,de),in_tempo:it});
+      }
+    });
+    if(!recs.length){alert('Nessun record per le risorse monitorate. Verifica che i nomi corrispondano.');return;}
+    DATA=recs;
+    document.getElementById('uploadSection').style.display='none';
+    document.getElementById('dashboard').style.display='block';
+    buildPBar();render();
+    document.getElementById('tbLive').textContent=recs.length+' SdF da '+fname;
+  }catch(err){console.error(err);alert('Errore parsing: '+err.message);}
+}
+
+
+// ═══ FILTRI ═══
+function getFil(){
+  var tipo=(document.getElementById('fTipo')||{}).value||'';
+  var prior=(document.getElementById('fPrior')||{}).value||'';
+  var esito=(document.getElementById('fEsito')||{}).value||'';
+  return DATA.filter(function(r){
+    if(!ACTIVE.has(r.lavorante))return false;
+    if(tipo&&r.tipo!==tipo)return false;
+    if(prior&&r.priorita!==prior)return false;
+    if(esito&&r.esito.indexOf(esito)<0)return false;
+    if(PER.type==='y2025')return r.anno==='2025';
+    if(PER.type==='y2026')return r.anno==='2026';
+    if(PER.type!=='all'&&PER.from&&PER.to){
+      var dr=r.data_esito||r.data_mail;
+      if(!dr||dr<PER.from||dr>PER.to)return false;
+    }
+    return true;
+  });
+}
+function setPeriod(type,btn){
+  document.querySelectorAll('#periodPills .pill').forEach(function(p){p.classList.remove('on');});
+  btn.classList.add('on');PER.type=type;
+  var cd=document.getElementById('customDates');
+  if(type==='custom'){cd.style.display='flex';return;}
+  cd.style.display='none';
+  var now=new Date(),y=now.getFullYear(),m=now.getMonth(),d=now.getDate();
+  var fmt=function(dt){return dt.toISOString().slice(0,10);};
+  if(type==='today')PER.from=PER.to=fmt(now);
+  else if(type==='week'){var dw=now.getDay()||7;var mo=new Date(now);mo.setDate(d-dw+1);var su=new Date(now);su.setDate(d-dw+7);PER.from=fmt(mo);PER.to=fmt(su);}
+  else if(type==='month'){PER.from=y+'-'+(m+1+'').padStart(2,'0')+'-01';PER.to=y+'-'+(m+1+'').padStart(2,'0')+'-'+(new Date(y,m+1,0).getDate()+'').padStart(2,'0');}
+  else if(type==='y2025'){PER.from='2025-01-01';PER.to='2025-12-31';}
+  else if(type==='y2026'){PER.from='2026-01-01';PER.to='2026-12-31';}
+  else{PER.from=null;PER.to=null;}
+  updPB();render();
+}
+function applyCustom(){
+  PER.from=document.getElementById('dateFrom').value;
+  PER.to=document.getElementById('dateTo').value;
+  if(PER.from&&PER.to){updPB();render();}
+}
+function updPB(){document.getElementById('tbPeriod').textContent=PER.from?(PER.from+' \u2192 '+PER.to):'Tutti i periodi';}
+function resetF(){
+  ['fTipo','fPrior','fEsito'].forEach(function(id){document.getElementById(id).value='';});
+  setPeriod('all',document.querySelector('[data-p="all"]'));
+}
+
+
+// ═══ PERSONE ═══
+function buildPBar(){
+  var bar=document.getElementById('peopleBar');
+  var grps={sirti:[],huawei:[],altro:[]};
+  PEOPLE.forEach(function(p){grps[p.gruppo||'altro'].push(p);});
+  var html='';
+  function rg(lbl,col,gn){
+    var ps=grps[gn];if(!ps.length)return;
+    html+='<span class="gtag" style="color:'+col+';">'+lbl+'</span>';
+    ps.forEach(function(p){
+      var act=ACTIVE.has(p.name);
+      var cls=act?(gn==='huawei'?'ah':gn==='sirti'?'as':'at'):'';
+      var tip='Clicca per '+(act?'disattivare':'attivare')+' '+p.name+'. Gruppo: '+(gn==='sirti'?'Sirti':gn==='huawei'?'Huawei':'TIM')+'. Stato: '+(act?'ATTIVO':'DISATTIVATO');
+      html+='<span class="pchip '+cls+'" data-nm="'+p.name+'" data-tip="'+tip+'" onclick="toggleP(this.dataset.nm)">'+
+        '<span class="dot" style="background:'+col+';"></span>'+p.name+'</span>';
+    });
+  }
+  rg('\u{1F535} Sirti','#0066CC','sirti');
+  rg('\u{1F534} Huawei','#E60028','huawei');
+  rg('🟢 TIM','#2D8B57','altro');
+  html+='<button class="addchip" onclick="openModal()" data-tip="Aggiungi una nuova risorsa specificando nome e azienda.">+ Aggiungi</button>';
+  bar.innerHTML=html;
+}
+function toggleP(name){
+  if(ACTIVE.has(name))ACTIVE.delete(name);else ACTIVE.add(name);
+  buildPBar();render();
+}
+
+
+// ═══ GIORNI LAVORATIVI ═══
+function isHoliday(d){
+  var m=d.getMonth()+1,dd=d.getDate(),y=d.getFullYear();
+  var fx=[[1,1],[1,6],[4,25],[5,1],[6,2],[8,15],[11,1],[12,8],[12,25],[12,26]];
+  for(var i=0;i<fx.length;i++)if(fx[i][0]===m&&fx[i][1]===dd)return true;
+  // Pasqua algoritmo
+  var a=y%19,b=Math.floor(y/100),c=y%100,d2=Math.floor(b/4),e=b%4;
+  var f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3);
+  var h=(19*a+b-d2-g+15)%30,i2=Math.floor(c/4),k=c%4;
+  var l=(32+2*e+2*i2-h-k)%7,m2=Math.floor((a+11*h+22*l)/451);
+  var pm=Math.floor((h+l-7*m2+114)/31),pd=((h+l-7*m2+114)%31)+1;
+  var ea=new Date(y,pm-1,pd),em=new Date(y,pm-1,pd+1);
+  return d.toDateString()===ea.toDateString()||d.toDateString()===em.toDateString();
+}
+function workDays(from,to){
+  if(!from||!to)return null;
+  var d1=new Date(from),d2=new Date(to);
+  if(isNaN(d1)||isNaN(d2)||d2<=d1)return 0;
+  var n=0,cur=new Date(d1);cur.setDate(cur.getDate()+1);
+  while(cur<=d2){var w=cur.getDay();if(w!==0&&w!==6&&!isHoliday(cur))n++;cur.setDate(cur.getDate()+1);}
+  return n;
+}
+
+// ═══ STATS ═══
+function getTempo(r){return DAY_MODE==='work'&&r.tempo_lav!=null?r.tempo_lav:r.tempo_gg;}
+function S(recs){
+  var n=recs.length,ch=0,an=0,re=0,wh=0,ur=0,st=0,di=0,ii=0,ts=0,tc=0,iy=0,ino=0;
+  recs.forEach(function(r){
+    if(r.esito==='CHIUSO')ch++;
+    if(r.esito.indexOf('ANNULL')>=0)an++;
+    if(r.tipo==='RETAIL')re++;else if(r.tipo==='WHOLESALE')wh++;
+    if(r.priorita==='URGENTE')ur++;else if(r.priorita==='STANDARD')st++;
+    di+=r.dim||0;ii+=r.infra||0;
+    var tval=getTempo(r);if(tval!=null){ts+=tval;tc++;}
+    if(r.in_tempo===true)iy++;else if(r.in_tempo===false)ino++;
+  });
+  var itot=iy+ino;
+  return{n:n,ch:ch,an:an,re:re,wh:wh,ur:ur,st:st,di:di,ii:ii,
+    at:tc?Math.round(ts/tc):null,
+    ps:itot?Math.round(iy/itot*100):null,
+    pc:n?Math.round(ch/n*100):0,iy:iy,itot:itot};
+}
+
+
+// ═══ RENDER ═══
+function render(){
+  var data=getFil();
+  renderKpi(data);renderPanels(data);renderBars(data);renderTL(data);renderTable();
+  if(document.getElementById('sec-grafici').classList.contains('on'))renderCharts();
+  document.getElementById('tbLive').textContent=data.length+' SdF nel periodo';
+  buildTLav();
+}
+
+function renderKpi(data){
+  var s=S(data);
+  var boxes=[
+    {v:s.n,l:'SdF totali',sub:'nel periodo',c:'cb',
+     tip:'TOTALE SdF nel periodo&#10;Formula: COUNT(record filtrati)&#10;Per le risorse selezionate.'},
+    {v:s.ch,l:'Chiusi',sub:s.pc+'% del totale',c:'cg',
+     tip:'SdF COMPLETATI con risposta.&#10;Formula: COUNT(esito=CHIUSO)&#10;= '+s.pc+'% dei '+s.n+' totali.'},
+    {v:s.an,l:'Annullati',sub:'stornati',c:'cr',
+     tip:'SdF ANNULLATI o stornati&#10;prima della chiusura.&#10;Non contano nel tempo medio.'},
+    {v:s.re,l:'Retail',sub:'clienti finali',c:'cb',
+     tip:'SdF tipo RETAIL.&#10;Fattibilità per clienti finali diretti.&#10;(es. aziende, enti pubblici)'},
+    {v:s.wh,l:'Wholesale',sub:'operatori',c:'cp2',
+     tip:'SdF tipo WHOLESALE.&#10;Fattibilità per operatori TLC&#10;tramite interfacce NNI o IRP.'},
+    {v:s.ur,l:'Urgenti',sub:'priorità alta',c:'cr',
+     tip:'SdF con priorità URGENTE.&#10;Timeline di risposta ridotta.&#10;Richiedono lavorazione prioritaria.'},
+    {v:s.at!=null?s.at+(DAY_MODE==='work'?' gg lav':' gg'):'-',l:'Tempo Medio',sub:DAY_MODE==='work'?'gg lavorativi':'gg solari',c:'ca',
+     tip:'VELOCITÀ MEDIA di lavorazione.&#10;Formula: MEDIA(Data Esito - Data Mail)&#10;Più basso = risposta più rapida.'},
+    {v:s.ps!=null?s.ps+'%':'-',l:'% In Tempo',sub:s.iy+'/'+s.itot+' SdF',
+     c:s.ps!=null&&s.ps>=80?'cg':'cr',
+     tip:'% SdF chiusi ENTRO scadenza.&#10;Formula: In tempo / Tot.con scad. × 100&#10;'+s.iy+' su '+s.itot+'. Target: >90%.'},
+    {v:s.di,l:'Int. Dim.',sub:'dimensionali',c:'cp2',
+     tip:'INTERVENTI DIMENSIONALI totali.&#10;Variazioni su apparati o circuiti DWDM.&#10;Indicatore di complessità tecnica.'},
+    {v:s.ii,l:'Int. Infra.',sub:'infrastrutturali',c:'ca',
+     tip:'INTERVENTI INFRASTRUTTURALI totali.&#10;Lavori su infrastruttura fisica&#10;(DROP, posa cavi, strutture passive).'}
+  ];
+  document.getElementById('kpiGlobal').innerHTML=boxes.map(function(b){
+    return '<div class="kbox '+b.c+'" data-tip="'+b.tip+'">'+
+      '<div class="kst"></div>'+
+      '<div class="kv">'+b.v+'</div>'+
+      '<div class="kl">'+b.l+'</div>'+
+      '<div class="ks">'+b.sub+'</div>'+
+    '</div>';
+  }).join('');
+}
+
+function renderPanels(data){
+  var el=document.getElementById('personPanels');
+  var ap=PEOPLE.filter(function(p){return ACTIVE.has(p.name);});
+  if(!ap.length){el.innerHTML='<div class="empty">👤 Seleziona almeno una risorsa</div>';return;}
+  var mx=Math.max.apply(null,ap.map(function(p){return data.filter(function(r){return r.lavorante===p.name;}).length;}))||1;
+  el.innerHTML=ap.map(function(p){
+    var recs=data.filter(function(r){return r.lavorante===p.name;});
+    var s=S(recs);var col=GC(p);
+    var tc=p.gruppo==='sirti'?'ts':p.gruppo==='huawei'?'th':'tt';
+    var tl=p.gruppo==='sirti'?'SIRTI':p.gruppo==='huawei'?'HUAWEI':'TIM';
+    function br(lbl,v,mv,vc,tip){
+      var pct=mv>0?Math.round(v/mv*100):0;
+      return '<div class="prow" data-tip="'+tip+'">'+
+        '<span class="prl">'+lbl+'</span>'+
+        '<div class="prbar"><div class="prfill" style="width:'+pct+'%;background:'+vc+';"></div></div>'+
+        '<span class="prv" style="color:'+col+';">'+v+'</span></div>';
+    }
+    return '<div class="ppanel" data-tip="'+p.name+' — '+tl+'&#10;'+recs.length+' SdF nel periodo selezionato&#10;Hover su ogni riga per dettagli.">' +
+      '<div class="pph">'+
+        '<span style="width:9px;height:9px;border-radius:50%;background:'+col+';flex-shrink:0;display:inline-block;box-shadow:0 1px 4px rgba(0,0,0,.2);"></span>'+
+        p.name+'<span class="pptag '+tc+'">'+tl+'</span>'+
+      '</div><div class="ppb">'+
+      br('SdF totali',s.n,mx,col,'Totale SdF nel periodo.&#10;Barra = % relativa al massimo del gruppo.')+
+      br('Chiusi',s.ch,mx,'var(--green)','SdF completati con risposta.&#10;= '+s.pc+'% dei '+s.n+' totali.')+
+      '<div class="prow" data-tip="% SdF completati sul totale.&#10;Formula: Chiusi/Totali × 100.&#10;Target aziendale: >80%.">'+
+        '<span class="prl">% Chiusi</span>'+
+        '<div class="prbar"><div class="prfill" style="width:'+s.pc+'%;background:'+col+';"></div></div>'+
+        '<span class="prv" style="color:'+col+';">'+s.pc+'%</span></div>'+
+      br('Retail',s.re,mx,'#0066CC','SdF RETAIL (clienti finali).&#10;Barra = % sul massimo del gruppo.')+
+      br('Wholesale',s.wh,mx,'#7c3aed','SdF WHOLESALE (operatori TLC).&#10;Barra = % sul massimo del gruppo.')+
+      br('Urgenti',s.ur,mx,'#dc2626','SdF con priorità URGENTE.&#10;Richiedono risposta prioritaria.')+
+      '<div class="prow" data-tip="Media giorni di lavorazione.&#10;= MEDIA(Data Esito - Data Mail)&#10;Più basso = più veloce.">'+
+        '<span class="prl">Tempo med.</span><div class="prbar"></div>'+
+        '<span class="prv" style="color:'+col+';">'+(s.at!=null?s.at+'gg':'-')+'</span></div>'+
+      '<div class="prow" data-tip="% SdF chiusi entro la scadenza.&#10;'+s.iy+' su '+s.itot+' con scadenza.&#10;Target: >90%.">'+
+        '<span class="prl">% Scad.</span>'+
+        '<div class="prbar"><div class="prfill" style="width:'+(s.ps||0)+'%;background:'+(s.ps!=null&&s.ps>=80?'var(--green)':'#dc2626')+';"></div></div>'+
+        '<span class="prv" style="color:'+(s.ps!=null&&s.ps>=80?'var(--green)':'#dc2626')+'">'+(s.ps!=null?s.ps+'%':'-')+'</span></div>'+
+      '<div class="prow" data-tip="Interventi Dimensionali totali.&#10;Variazioni su apparati/circuiti.&#10;Indicatore di complessità.">'+
+        '<span class="prl">Int. Dim.</span><div class="prbar"></div>'+
+        '<span class="prv" style="color:#7c3aed;">'+s.di+'</span></div>'+
+      '<div class="prow" data-tip="Interventi Infrastrutturali totali.&#10;Lavori su infrastruttura fisica.&#10;(DROP, posa, strutture passive)">'+
+        '<span class="prl">Int. Infra.</span><div class="prbar"></div>'+
+        '<span class="prv" style="color:#d97706;">'+s.ii+'</span></div>'+
+    '</div></div>';
+  }).join('');
+}
+
+function renderBars(data){
+  var el=document.getElementById('barsGrid');
+  var ap=PEOPLE.filter(function(p){return ACTIVE.has(p.name);});
+  if(ap.length<2){el.innerHTML='<div class="empty">Seleziona almeno 2 risorse per il confronto</div>';return;}
+  var sm={};ap.forEach(function(p){sm[p.name]=S(data.filter(function(r){return r.lavorante===p.name;}));});
+  var metrics=[
+    {l:'SdF Totali',tip:'Numero totale SdF nel periodo&#10;per ogni risorsa attiva.',f:function(s){return s.n;},fmt:function(s){return s.n;}},
+    {l:'Chiusi',tip:'SdF completati con risposta.&#10;Tra parentesi la % sul totale.',f:function(s){return s.ch;},fmt:function(s){return s.ch;},pct:function(s){return s.pc+'%';}},
+    {l:'Retail',tip:'Fattibilità per clienti finali.&#10;(non operatori TLC)',f:function(s){return s.re;},fmt:function(s){return s.re;}},
+    {l:'Wholesale',tip:'Fattibilità per operatori TLC.&#10;(NNI/IRP)',f:function(s){return s.wh;},fmt:function(s){return s.wh;}},
+    {l:'Urgenti',tip:'SdF con priorità URGENTE.&#10;(timeline di risposta ridotta)',f:function(s){return s.ur;},fmt:function(s){return s.ur;}},
+    {l:'Tempo Medio gg',tip:'Media giorni di lavorazione.&#10;= MEDIA(Data Esito - Data Mail)&#10;Più basso = risposta più rapida.',f:function(s){return s.at||0;},fmt:function(s){return s.at!=null?s.at+'gg':'-';}},
+    {l:'% In Tempo',tip:'% SdF chiusi entro la scadenza.&#10;= In tempo / Tot.con scadenza × 100.&#10;Target: >90%.',f:function(s){return s.ps||0;},fmt:function(s){return s.ps!=null?s.ps+'%':'-';}},
+    {l:'Int. Dimensionali',tip:'Totale interventi dimensionali.&#10;Variazioni su apparati/circuiti DWDM.',f:function(s){return s.di;},fmt:function(s){return s.di;}},
+    {l:'Int. Infrastrutturali',tip:'Totale interventi infrastrutturali.&#10;Lavori su infrastruttura fisica.',f:function(s){return s.ii;},fmt:function(s){return s.ii;}}
+  ];
+  el.innerHTML=metrics.map(function(m){
+    var vals=ap.map(function(p){return{name:p.name,raw:m.f(sm[p.name]),fmt:m.fmt(sm[p.name]),pct:m.pct?m.pct(sm[p.name]):null,col:GC(p)};});
+    var mx=Math.max.apply(null,vals.map(function(v){return v.raw;}))||1;
+    return '<div class="bcard" data-tip="'+m.tip+'">'+
+      '<div class="bil"><span class="sh-info" style="margin-right:.1rem;" data-tip="'+m.tip+'">i</span>'+m.l+'</div>'+
+      vals.map(function(v){return '<div class="brow">'+
+        '<span class="bnm" style="color:'+v.col+';" data-tip="'+v.name+': '+v.fmt+'&#10;'+m.l+'">'+v.name+'</span>'+
+        '<div class="btr"><div class="bfi" style="width:'+Math.round(v.raw/mx*100)+'%;background:'+v.col+';"></div></div>'+
+        '<span class="bvl" style="color:'+v.col+';" data-tip="'+v.name+': '+v.fmt+(v.pct?' ('+v.pct+')':'')+ '&#10;= '+Math.round(v.raw/mx*100)+'% del massimo">'+v.fmt+(v.pct?'<small style="opacity:.72;font-size:.58rem;"> '+v.pct+'</small>':'')+ '</span>'+
+      '</div>';}).join('')+'</div>';
+  }).join('');
+}
+
+function renderTL(data){
+  var el=document.getElementById('tlWrap');
+  var mm={};
+  data.forEach(function(r){
+    var d=r.data_esito||r.data_mail;if(!d||!d.match(/^\d{4}-\d{2}-\d{2}/))return;
+    var ym=d.slice(0,7);if(!mm[ym])mm[ym]={};
+    if(!mm[ym][d])mm[ym][d]=[];mm[ym][d].push(r);
+  });
+  var months=Object.keys(mm).sort();
+  if(!months.length){el.innerHTML='<div class="empty">Nessun dato con data esito nel periodo</div>';return;}
+  var MN=['','Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
+  el.innerHTML='<div class="tlm">'+months.map(function(ym){
+    var y=parseInt(ym.slice(0,4)),mo=parseInt(ym.slice(5,7));
+    var days='';
+    for(var d=1;d<=new Date(y,mo,0).getDate();d++){
+      var ds=ym+'-'+(d+'').padStart(2,'0');
+      var recs=mm[ym][ds]||[];var n=recs.length;
+      var cls='tld'+(n>=5?' h n5':n>=4?' h n4':n>=3?' h n3':n>=2?' h n2':n>=1?' h n1':'');
+      var tip=n>0?('📅 '+ds+'&#10;'+n+' SdF completati&#10;'+recs.map(function(r){return '· '+r.lavorante+': '+r.id.slice(0,16);}).join('&#10;')):('Giorno '+d+' — nessun SdF');
+      days+='<div class="'+cls+'" data-tip="'+tip+'">'+(n>0?n:d)+'</div>';
+    }
+    var monthTotal = Object.values(mm[ym]||{}).reduce(function(a,arr){return a+(arr?arr.length:0);},0);
+    var totalBadge = '<span style="'+
+      'display:inline-flex;align-items:center;justify-content:center;'+
+      'margin-left:8px;padding:.1rem .55rem;border-radius:20px;'+
+      'background:rgba(0,102,204,.1);border:1px solid rgba(0,102,204,.25);'+
+      'font-size:.7rem;font-weight:700;color:#0066CC;min-width:28px;'+
+      '" data-tip="Totale SdF nel mese di '+MN[mo]+' '+y+'">'+monthTotal+'</span>';
+    return '<div style="margin-bottom:.15rem;">'+
+      '<div class="tlmh" style="display:flex;align-items:center;gap:.3rem;">'+
+        MN[mo]+' '+y+totalBadge+
+      '</div>'+
+      '<div class="tld-row">'+days+'</div>'+
+    '</div>';
+  }).join('')+'</div>'+
+  '<div class="tl-leg" data-tip="Intensità colore = SdF completati in quel giorno.&#10;Hover su ogni giorno per vedere i dettagli.">'+'0 '+[1,2,3,4,'5+'].map(function(n,i){
+    var bg=i>=4?'#0066CC':'rgba(0,102,204,'+(0.12+(i*0.14))+')';
+    return '<span class="tl-lb" style="background:'+bg+';border-color:rgba(0,102,204,.3);"></span>'+n;
+  }).join(' ')+' SdF/giorno</div>';
+}
+
+// ═══ GRAFICI SVG ═══
+
+// ═══ PALETTE ENTERPRISE (distinta per risorsa) ═══
+var PMAP = {
+  // Sirti: blu distinti, soft
+  'LUPOLI':    {fill:'#4A8FD4', stroke:'#2E6EA8', light:'#DBE9F8'},
+  'FEROCI':    {fill:'#6BAED6', stroke:'#3A89BC', light:'#D4E9F5'},
+  // Huawei: rosso/caldo distinti, soft
+  'CECCHETTO': {fill:'#D96B5A', stroke:'#B54535', light:'#F5DDD9'},
+  'GENTILE':   {fill:'#C0504D', stroke:'#8C3230', light:'#F0D8D7'},
+  'IMPERATORI':{fill:'#E8906A', stroke:'#C0623A', light:'#FAEAE0'},
+  'TENUTA':    {fill:'#B85C6E', stroke:'#8C3045', light:'#F0D8DE'},
+};
+function PC(p, type){
+  var m=PMAP[p.name];
+  if(!m) m=p.gruppo==='sirti'?{fill:'#4A8FD4',stroke:'#2E6EA8',light:'#DBE9F8'}:{fill:'#D96B5A',stroke:'#B54535',light:'#F5DDD9'};
+  return type==='stroke'?m.stroke:type==='light'?m.light:m.fill;
+}
+
+// ═══ GRAFICI SVG ═══
+var CHART_TYPE = 'bar';
+
+function setChartType(type, btn) {
+  CHART_TYPE = type;
+  document.querySelectorAll('#chartTypeBtns .pill').forEach(function(p){p.classList.remove('on');});
+  btn.classList.add('on');
+  renderCharts();
+}
+
+function renderCharts() {
+  var data = getFil();
+  var ap = PEOPLE.filter(function(p){return ACTIVE.has(p.name);});
+  var el = document.getElementById('chartContainer');
+  if(!el) return;
+  if(!ap.length){el.innerHTML='<div class="empty">Seleziona almeno una risorsa</div>';return;}
+  var sm = {};
+  ap.forEach(function(p){sm[p.name] = S(data.filter(function(r){return r.lavorante===p.name;}));});
+  if(CHART_TYPE === 'bar')  el.innerHTML = buildBarChart(ap, sm);
+  else                      el.innerHTML = buildPieCharts(ap, sm);
+}
+
+// Mappa colori globale (accessibile da tutti i grafici)
+var GCOLORS = {
+  'LUPOLI':    {fill:'#0066CC', stroke:'#004C99'},
+  'FEROCI':    {fill:'#38BDF8', stroke:'#0284C7'},
+  'CECCHETTO': {fill:'#DC2626', stroke:'#991B1B'},
+  'GENTILE':   {fill:'#EA7316', stroke:'#C2560E'},
+  'IMPERATORI':{fill:'#CA8A04', stroke:'#78350F'},
+  'TENUTA':    {fill:'#BE185D', stroke:'#831843'},
+  'ANGOTTI':   {fill:'#2D8B57', stroke:'#1A5C38'},
+};
+var GINITS = {'LUPOLI':'L','FEROCI':'F','CECCHETTO':'C','GENTILE':'G','IMPERATORI':'I','TENUTA':'T','ANGOTTI':'A'};
+function gColor(name,k){var m=GCOLORS[name];if(!m)m={fill:'#6b7280',stroke:'#374151'};return m[k];}
+function gInit(name){return GINITS[name]||name[0];}
+
+function buildBarChart(ap, sm) {
+  var metrics = [
+    {k:'n',  l:'SdF Tot.',   tip:'Totale SdF nel periodo'},
+    {k:'ch', l:'Chiusi',     tip:'SdF completati'},
+    {k:'re', l:'Retail',     tip:'Fattibilità clienti finali'},
+    {k:'wh', l:'Wholesale',  tip:'Fattibilità operatori TLC'},
+    {k:'ur', l:'Urgenti',    tip:'Priorità URGENTE'},
+    {k:'di', l:'Int.Dim.',   tip:'Interventi Dimensionali'},
+    {k:'ii', l:'Int.Infra.', tip:'Interventi Infrastrutturali'},
+  ];
+
+  var nM = metrics.length, nP = ap.length;
+  var W = 860, padL = 40, padR = 24, padT = 20, padB = 90; // padB alto per legenda
+  var H = 320 + padB;
+  var cW = W - padL - padR, cH = 320 - padT;
+  var gW = cW / nM;
+  var gap = 4, bW = Math.min(26, (gW - (nP+1)*gap) / nP);
+
+  var maxVals = metrics.map(function(m){
+    return Math.max.apply(null, ap.map(function(p){return sm[p.name][m.k]||0;})) || 1;
+  });
+
+  var svg = '<svg width="100%" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg"'+
+    ' style="font-family:Inter,sans-serif;display:block;">';
+  svg += '<rect width="'+W+'" height="'+H+'" fill="#f9fafb" rx="6"/>';
+  svg += '<rect x="'+padL+'" y="'+padT+'" width="'+cW+'" height="'+cH+'" fill="white" rx="4" stroke="#e5e7eb" stroke-width="1"/>';
+
+  // Griglia orizzontale
+  for(var gi=1;gi<=5;gi++){
+    var gy=(padT + cH - (gi/5)*cH).toFixed(1);
+    svg += '<line x1="'+padL+'" y1="'+gy+'" x2="'+(W-padR)+'" y2="'+gy+'" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4,2"/>';
+  }
+  // Asse Y label
+  for(var gi=0;gi<=5;gi++){
+    var gy2=(padT + cH - (gi/5)*cH).toFixed(1);
+    svg += '<text x="'+(padL-5)+'" y="'+(parseFloat(gy2)+3)+'" text-anchor="end" font-size="9" fill="#9ca3af">'+Math.round(gi/5*100)+'%</text>';
+  }
+
+  // Asse X e Y
+  svg += '<line x1="'+padL+'" y1="'+padT+'" x2="'+padL+'" y2="'+(padT+cH)+'" stroke="#d1d5db" stroke-width="1.5"/>';
+  svg += '<line x1="'+padL+'" y1="'+(padT+cH)+'" x2="'+(W-padR)+'" y2="'+(padT+cH)+'" stroke="#d1d5db" stroke-width="1.5"/>';
+
+  // Barre e label metriche
+  metrics.forEach(function(m, mi){
+    var gx = padL + mi * gW;
+    var maxV = maxVals[mi];
+    var totalBarW = nP * bW + (nP - 1) * gap;
+    var startX = gx + (gW - totalBarW) / 2;
+
+    // Label metrica (centrata sotto gruppo barre)
+    var lx = (gx + gW/2).toFixed(1);
+    svg += '<text x="'+lx+'" y="'+(padT+cH+13)+'" text-anchor="middle" font-size="9.5" fill="#6b7280" font-weight="600">'+m.l+'</text>';
+
+    // Linea divisore verticale tra gruppi (sottile)
+    if(mi > 0){
+      svg += '<line x1="'+gx.toFixed(1)+'" y1="'+(padT+4)+'" x2="'+gx.toFixed(1)+'" y2="'+(padT+cH)+'" stroke="#f3f4f6" stroke-width="1"/>';
+    }
+
+    ap.forEach(function(p, pi){
+      var val = sm[p.name][m.k] || 0;
+      var pct = maxV > 0 ? val/maxV : 0;
+      var bH = pct * cH;
+      var bx = (startX + pi*(bW+gap)).toFixed(1);
+      var by = (padT + cH - bH).toFixed(1);
+      var fill = gColor(p.name,'fill');
+      var stroke = gColor(p.name,'stroke');
+
+      // Ombra barra
+      svg += '<rect x="'+(parseFloat(bx)+1.5)+'" y="'+(parseFloat(by)+2)+'"'+
+        ' width="'+bW+'" height="'+bH.toFixed(1)+'" rx="3" fill="rgba(0,0,0,0.06)"/>';
+      // Barra
+      svg += '<rect x="'+bx+'" y="'+by+'"'+
+        ' width="'+bW+'" height="'+bH.toFixed(1)+'"'+
+        ' rx="3" fill="'+fill+'" stroke="'+stroke+'" stroke-width="0.5"'+
+        ' data-tip="'+p.name+'&#10;'+m.l+': '+val+'&#10;'+m.tip+'"/>';
+      // Valore sopra barra
+      if(bH > 16){
+        svg += '<text x="'+(parseFloat(bx)+bW/2).toFixed(1)+'" y="'+(parseFloat(by)-4)+'"'+
+          ' text-anchor="middle" font-size="8.5" fill="'+stroke+'" font-weight="700">'+val+'</text>';
+      } else if(val > 0){
+        svg += '<text x="'+(parseFloat(bx)+bW/2).toFixed(1)+'" y="'+(parseFloat(by)-3)+'"'+
+          ' text-anchor="middle" font-size="8" fill="'+stroke+'" font-weight="700">'+val+'</text>';
+      }
+    });
+  });
+
+  // Legenda in basso — su 2 righe se necessario
+  var LEG_Y1 = padT + cH + 28;
+  var LEG_Y2 = padT + cH + 46;
+  var perRow = Math.ceil(nP/2);
+  ap.forEach(function(p, pi){
+    var row = pi < perRow ? 0 : 1;
+    var col = pi % perRow;
+    var maxPerRow = perRow;
+    var rowTotal = row === 0 ? Math.min(perRow, nP) : nP - perRow;
+    var legTotalW = rowTotal * 120;
+    var legStartX = (W - legTotalW) / 2;
+    var lx2 = legStartX + col * 120;
+    var ly2 = row === 0 ? LEG_Y1 : LEG_Y2;
+    var fill = gColor(p.name,'fill');
+    var grupLabel = p.gruppo==='sirti' ? 'Sirti' : p.gruppo==='huawei' ? 'Huawei' : 'TIM';
+    svg += '<rect x="'+lx2.toFixed(1)+'" y="'+(ly2-1)+'" width="11" height="11" rx="2" fill="'+fill+'"/>';
+    svg += '<text x="'+(lx2+14)+'" y="'+(ly2+8)+'" font-size="9.5" fill="#374151" font-weight="600">'+p.name+' ('+grupLabel+')</text>';
+  });
+
+  svg += '</svg>';
+  return '<div style="overflow-x:auto;border-radius:8px;border:1px solid #e5e7eb;">'+svg+'</div>'+
+    '<p style="text-align:center;font-size:.62rem;color:#9ca3af;margin-top:.4rem;" '+
+    'data-tip="Hover sulle barre per valore.&#10;Altezze proporzionali al massimo di ogni metrica.">'+
+    'Hover sulle barre per i valori · Altezze relative al massimo per metrica</p>';
+}
+
+function buildPieCharts(ap, sm) {
+  // Mappa nome → iniziale (hardcoded, non dipende da PMAP)
+
+  // Mappa nome → colori forti e distinti (hardcoded)
+  // Usa dizionario globale GCOLORS per coerenza con bar chart
+  var getC=function(name,k){return gColor(name,k);};
+  var getI=function(name){return gInit(name);};
+
+  var pieM = [
+    {l:'SdF Totali',    f:function(s){return s.n;},    tip:'Distribuzione SdF totali tra le risorse.'},
+    {l:'Chiusi',        f:function(s){return s.ch;},   tip:'Distribuzione SdF chiusi tra le risorse.'},
+    {l:'% In Tempo',    f:function(s){return s.ps||0;},tip:'Percentuale rispetto scadenze per risorsa.'},
+    {l:'Int.Dim.+Inf.', f:function(s){return s.di+s.ii;},tip:'Totale interventi (dim. + infrastrutturali).'},
+  ];
+
+  var R=62, pieW=320, pieH=245, cols=2, rows=2;
+  var CX_off=pieW/2, CY_off=pieH/2+10;
+  var SVG_W=cols*pieW, SVG_H=rows*pieH+56;
+
+  function arc(cx,cy,r,a1,a2){
+    var x1=(cx+r*Math.cos(a1)).toFixed(2), y1=(cy+r*Math.sin(a1)).toFixed(2);
+    var x2=(cx+r*Math.cos(a2)).toFixed(2), y2=(cy+r*Math.sin(a2)).toFixed(2);
+    return 'M'+cx+','+cy+' L'+x1+','+y1+' A'+r+','+r+' 0 '+(a2-a1>Math.PI?1:0)+',1 '+x2+','+y2+' Z';
+  }
+
+  function makePie(m, cx, cy) {
+    var rawVals = ap.map(function(p){
+      return {
+        name: p.name, init: getI(p.name),
+        fill: getC(p.name,'fill'), stroke: getC(p.name,'stroke'),
+        v: m.f(sm[p.name])
+      };
+    });
+    var tot = rawVals.reduce(function(a,v){return a+v.v;},0);
+    if(!tot) return '<text x="'+cx+'" y="'+cy+'" text-anchor="middle" font-size="10" fill="#9ca3af">N/D</text>';
+
+    // Arco minimo garantito per fette esistenti (8° = 0.14 rad)
+    var MIN_ARC = 0.14;
+    var TWO_PI = 2*Math.PI;
+    var nonZero = rawVals.filter(function(v){return v.v>0;});
+    var smallCount = nonZero.filter(function(v){return (v.v/tot)*TWO_PI < MIN_ARC;}).length;
+    var extraArc = smallCount * MIN_ARC;
+    var remainArc = TWO_PI - extraArc;
+    var bigTot = rawVals.reduce(function(a,v){return a+(((v.v/tot)*TWO_PI>=MIN_ARC)?v.v:0);},0);
+
+    // Assegna angoli con minimo garantito
+    var vals = rawVals.map(function(v){
+      var naturalArc = tot>0?(v.v/tot)*TWO_PI:0;
+      var arc = v.v===0 ? 0 : (naturalArc < MIN_ARC ? MIN_ARC : (bigTot>0?(v.v/bigTot)*remainArc:naturalArc));
+      return {name:v.name,init:v.init,fill:v.fill,stroke:v.stroke,v:v.v,arc:arc,
+              pct:tot>0?Math.round(v.v/tot*100):0};
+    });
+
+    var out='', ang=-Math.PI/2, labels=[];
+    vals.forEach(function(v){
+      if(!v.v) return;
+      var a1=ang, a2=ang+v.arc; ang+=v.arc;
+      var mid=a1+v.arc/2;
+      var x1=(cx+R*Math.cos(a1)).toFixed(2), y1=(cy+R*Math.sin(a1)).toFixed(2);
+      var x2=(cx+R*Math.cos(a2)).toFixed(2), y2=(cy+R*Math.sin(a2)).toFixed(2);
+      var lg=v.arc>Math.PI?1:0;
+      out+='<path d="M'+cx+','+cy+' L'+x1+','+y1+' A'+R+','+R+' 0 '+lg+',1 '+x2+','+y2+' Z"'+
+        ' fill="'+v.fill+'" stroke="white" stroke-width="2.5"'+
+        ' data-tip="'+v.name+' ('+v.init+')\n'+m.l+': '+v.v+'\n'+v.pct+'% del totale"/>';
+      if(v.arc>0.28){
+        var ix=(cx+R*0.60*Math.cos(mid)).toFixed(1);
+        var iy=(cy+R*0.60*Math.sin(mid)).toFixed(1);
+        out+='<text x="'+ix+'" y="'+(parseFloat(iy)+4)+'"'+
+          ' text-anchor="middle" font-size="13" fill="white" font-weight="900"'+
+          ' style="pointer-events:none;">'+v.init+'</text>';
+      }
+      out+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(R*0.38)+'" fill="white"/>';
+      if(v.arc>0.10){
+        var LOUT=R+24;
+        var lx=(cx+LOUT*Math.cos(mid)).toFixed(1);
+        var ly=(cy+LOUT*Math.sin(mid)).toFixed(1);
+        var lx0=(cx+(R+2)*Math.cos(mid)).toFixed(1);
+        var ly0=(cy+(R+2)*Math.sin(mid)).toFixed(1);
+        var lx1=(cx+(LOUT-8)*Math.cos(mid)).toFixed(1);
+        var ly1=(cy+(LOUT-8)*Math.sin(mid)).toFixed(1);
+        labels.push({lx0:lx0,ly0:ly0,lx1:lx1,ly1:ly1,lx:lx,ly:ly,
+          anchor:parseFloat(lx)<cx?'end':'start',
+          init:v.init,pct:v.pct,stroke:v.stroke});
+      }
+    });
+    labels.forEach(function(lb){
+      out+='<line x1="'+lb.lx0+'" y1="'+lb.ly0+'" x2="'+lb.lx1+'" y2="'+lb.ly1+'"'+
+        ' stroke="'+lb.stroke+'" stroke-width="1.2" opacity="0.8"/>';
+      out+='<text x="'+lb.lx+'" y="'+(parseFloat(lb.ly)-1)+'"'+
+        ' text-anchor="'+lb.anchor+'" font-size="10" fill="'+lb.stroke+'" font-weight="800"'+
+        ' style="pointer-events:none;">'+lb.init+'</text>';
+      out+='<text x="'+lb.lx+'" y="'+(parseFloat(lb.ly)+11)+'"'+
+        ' text-anchor="'+lb.anchor+'" font-size="9" fill="'+lb.stroke+'" font-weight="600"'+
+        ' style="pointer-events:none;">'+lb.pct+'%</text>';
+    });
+    out+='<text x="'+cx+'" y="'+(cy+5)+'" text-anchor="middle" font-size="17" fill="#1f2937" font-weight="900">'+tot+'</text>';
+    out+='<text x="'+cx+'" y="'+(cy+19)+'" text-anchor="middle" font-size="8" fill="#9ca3af">TOT.</text>';
+    return out;
+  }
+
+  var svg = '<svg width="100%" viewBox="0 0 '+SVG_W+' '+SVG_H+'"'+
+    ' xmlns="http://www.w3.org/2000/svg" font-family="Inter,sans-serif" style="display:block;">';
+  svg += '<rect width="'+SVG_W+'" height="'+SVG_H+'" fill="#f9fafb" rx="8"/>';
+
+  pieM.forEach(function(m,idx){
+    var col=idx%cols, row=Math.floor(idx/cols);
+    var cx=col*pieW+CX_off, cy=row*pieH+CY_off;
+    svg += '<rect x="'+(col*pieW+5)+'" y="'+(row*pieH+5)+'"'+
+      ' width="'+(pieW-10)+'" height="'+(pieH-10)+'"'+
+      ' fill="white" rx="8" stroke="#e5e7eb" stroke-width="1"/>';
+    svg += '<text x="'+cx+'" y="'+(row*pieH+23)+'"'+
+      ' text-anchor="middle" font-size="12" fill="#374151" font-weight="700"'+
+      ' data-tip="'+m.tip+'">'+m.l+'</text>';
+    svg += makePie(m, cx, cy);
+  });
+
+  // Legenda in fondo: 2 righe Sirti / Huawei
+  var sGrp = ap.filter(function(p){return p.gruppo==='sirti';});
+  var hGrp = ap.filter(function(p){return p.gruppo==='huawei';});
+  var legY = rows*pieH + 10;
+
+  // Legenda compatta: tutti i gruppi su righe da max 4, font piccolo
+  var tGrp=ap.filter(function(p){return p.gruppo==='altro';});
+  var allLeg=sGrp.concat(hGrp).concat(tGrp);
+  var ITEM_W=102, ITEMS_PER_ROW=4;
+  var numRows=Math.ceil(allLeg.length/ITEMS_PER_ROW);
+  for(var ri=0;ri<numRows;ri++){
+    var rowItems=allLeg.slice(ri*ITEMS_PER_ROW,(ri+1)*ITEMS_PER_ROW);
+    var rowW=rowItems.length*ITEM_W;
+    var rowX=(SVG_W-rowW)/2;
+    var rowY=legY+ri*16;
+    rowItems.forEach(function(p,pi){
+      var lx=rowX+pi*ITEM_W;
+      svg+='<rect x="'+lx.toFixed(1)+'" y="'+(rowY-1)+'" width="9" height="9" rx="2" fill="'+getC(p.name,'fill')+'"/>';
+      svg+='<text x="'+(lx+12)+'" y="'+(rowY+7)+'" font-size="8" fill="#374151" font-weight="700">'+
+        getI(p.name)+' = '+p.name+'</text>';
+    });
+  }
+
+  svg += '</svg>';
+
+  return '<div style="overflow-x:auto;border-radius:8px;border:1px solid #e5e7eb;">'+svg+'</div>'+
+    '<p style="text-align:center;font-size:.62rem;color:#9ca3af;margin-top:.4rem;"'+
+    ' data-tip="Iniziale nella fetta = nome risorsa.\nHover per valore e % esatti.\nL=Lupoli F=Feroci C=Cecchetto G=Gentile I=Imperatori T=Tenuta">'+
+    'L=Lupoli &nbsp;F=Feroci &nbsp;C=Cecchetto &nbsp;G=Gentile &nbsp;I=Imperatori &nbsp;T=Tenuta</p>';
+}
+
+// ═══ TABELLA ═══
+function buildTLav(){
+  var sel=document.getElementById('tLav');var cur=sel.value;
+  sel.innerHTML='<option value="">Tutti i lavoranti</option>';
+  PEOPLE.filter(function(p){return ACTIVE.has(p.name);}).forEach(function(p){
+    var o=document.createElement('option');o.value=p.name;o.textContent=p.name;sel.appendChild(o);
+  });sel.value=cur;
+}
+function renderTable(){
+  var lav=(document.getElementById('tLav')||{}).value||'';
+  var grp=(document.getElementById('tGrp')||{}).value||'';
+  var tipo=(document.getElementById('tTipo')||{}).value||'';
+  var esito=(document.getElementById('tEsito')||{}).value||'';
+  var prior=(document.getElementById('tPrior')||{}).value||'';
+  var src=((document.getElementById('tSearch')||{}).value||'').toLowerCase();
+  var data=getFil().filter(function(r){
+    if(lav&&r.lavorante!==lav)return false;
+    if(grp&&r.gruppo!==grp)return false;
+    if(tipo&&r.tipo!==tipo)return false;
+    if(esito&&r.esito.indexOf(esito)<0)return false;
+    if(prior&&r.priorita!==prior)return false;
+    if(src&&(r.id+r.cliente+r.comune).toLowerCase().indexOf(src)<0)return false;
+    return true;
+  }).sort(function(a,b){
+    var av=a[SRT.col]||'',bv=b[SRT.col]||'';
+    return av<bv?(SRT.dir==='asc'?-1:1):av>bv?(SRT.dir==='asc'?1:-1):0;
+  });
+  var cnt=document.getElementById('tCount');
+  if(cnt)cnt.textContent=data.length+' SdF';
+  var html=data.map(function(r){
+    var ot=r.in_tempo===true?'<span class="ity">✔</span>':r.in_tempo===false?'<span class="itn">✖</span>':'-';
+    var gb=r.gruppo==='sirti'?'<span class="bg bgs">S</span>':r.gruppo==='huawei'?'<span class="bg bgh">H</span>':'<span class="bg">?</span>';
+    var tb=r.tipo==='RETAIL'?'<span class="bg bgr">R</span>':r.tipo==='WHOLESALE'?'<span class="bg bgw">W</span>':'<span class="bg">-</span>';
+    var eb=r.esito==='CHIUSO'?'<span class="bg bgch">CHIUSO</span>':r.esito.indexOf('ANNULL')>=0?'<span class="bg bgan">ANNULL.</span>':'<span class="bg bgpn">'+(r.esito.slice(0,8)||'-')+'</span>';
+    var pb=r.priorita==='URGENTE'?'<span class="bg bgug">URG</span>':'<span class="bg bgst">STD</span>';
+    var col=GC({gruppo:r.gruppo});
+    var tip='SdF: '+r.id+'&#10;'+r.lavorante+' ('+r.gruppo.toUpperCase()+')&#10;'+r.tipo+' · '+r.esito+'&#10;'+r.prov+' - '+r.comune;
+    return '<tr data-tip="'+tip+'">'+
+      '<td>'+r.anno+'</td>'+
+      '<td style="font-size:.68rem;white-space:nowrap;font-weight:600;color:var(--g700);">'+r.id+'</td>'+
+      '<td style="font-weight:700;color:'+col+';">'+r.lavorante+'</td>'+
+      '<td>'+gb+'</td><td>'+tb+'</td><td>'+r.prov+'</td>'+
+      '<td style="max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+r.comune+'</td>'+
+      '<td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+r.cliente+'</td>'+
+      '<td>'+eb+'</td><td>'+pb+'</td>'+
+      '<td style="font-size:.7rem;white-space:nowrap;">'+(r.data_mail||'-')+'</td>'+
+      '<td style="font-size:.7rem;white-space:nowrap;">'+(r.data_esito||'-')+'</td>'+
+      '<td style="font-size:.7rem;white-space:nowrap;">'+(r.data_scadenza||'-')+'</td>'+
+      '<td style="text-align:center;font-weight:600;">'+(getTempo(r)!=null?getTempo(r):'-')+'</td>'+
+      '<td style="text-align:center;">'+ot+'</td>'+
+      '<td style="text-align:center;">'+r.dim+'</td>'+
+      '<td style="text-align:center;">'+r.infra+'</td>'+
+    '</tr>';
+  }).join('');
+  var tb=document.getElementById('tBody');
+  if(tb)tb.innerHTML=html||'<tr><td colspan="17" style="text-align:center;padding:1.5rem;color:var(--g400);">Nessun SdF nel periodo selezionato</td></tr>';
+  document.querySelectorAll('thead th[data-sc]').forEach(function(th){
+    th.classList.remove('asc','desc');
+    if(th.dataset.sc===SRT.col)th.classList.add(SRT.dir);
+  });
+}
+function sortBy(col){
+  SRT.dir=SRT.col===col?(SRT.dir==='asc'?'desc':'asc'):'desc';SRT.col=col;renderTable();
+}
+
+// ═══ DAY MODE ═══
+function setDayMode(mode, btn) {
+  DAY_MODE = mode;
+  document.querySelectorAll('#dayModePills .pill').forEach(function(p){p.classList.remove('on');});
+  btn.classList.add('on');
+  // Aggiorna il tooltip del KPI Tempo Medio
+  var kpiEl = document.querySelector('.kbox .kl');
+  render();
+  // Aggiorna titolo colonna Gg in tabella
+  var thGg = document.querySelector('thead th[data-sc="tempo_gg"]');
+  if(thGg) thGg.innerHTML = (mode==='work' ? 'Gg Lav.' : 'Gg') +
+    ' <span style="font-size:.5rem;color:var(--g400);">' +
+    (mode==='work' ? '(lav.)' : '(sol.)') + '</span>';
+}
+
+// ═══ SEZIONI ═══
+function toggleKpiMode(btn){
+  KPI_MODE=KPI_MODE==='solare'?'lavorativo':'solare';
+  btn.textContent=KPI_MODE==='solare'?'☀ Giorni solari':'💼 Giorni lavorativi';
+  btn.title=KPI_MODE==='solare'?'Clicca per passare a giorni lavorativi':'Clicca per passare a giorni solari';
+  btn.style.borderColor=KPI_MODE==='lavorativo'?'var(--blue)':'';
+  btn.style.color=KPI_MODE==='lavorativo'?'var(--blue)':'';
+  render();
+}
+function showSec(id,btn){
+  document.querySelectorAll('.stab').forEach(function(b){b.classList.remove('on');});
+  document.querySelectorAll('.spane').forEach(function(p){p.classList.remove('on');});
+  btn.classList.add('on');document.getElementById('sec-'+id).classList.add('on');
+  if(id==='grafici')setTimeout(renderCharts,30);
+}
+
+// ═══ MODAL ═══
+function openModal(){document.getElementById('movo').classList.add('open');setTimeout(function(){document.getElementById('mName').focus();},80);}
+function closeModal(){document.getElementById('movo').classList.remove('open');}
+function addPerson(){
+  var n=document.getElementById('mName').value.trim().toUpperCase();
+  var g=document.getElementById('mGruppo').value;
+  if(!n)return;
+  if(!PEOPLE.some(function(p){return p.name===n;}))PEOPLE.push({name:n,gruppo:g});
+  ACTIVE.add(n);closeModal();buildPBar();render();
+}
+document.getElementById('movo').addEventListener('click',function(e){if(e.target===this)closeModal();});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape')closeModal();
+  if(e.key==='Enter'&&document.getElementById('movo').classList.contains('open'))addPerson();
+});
+
+// ═══ DRAG DROP ═══
+var dz=document.getElementById('dropZone');
+if(dz){
+  dz.addEventListener('dragover',function(e){e.preventDefault();dz.classList.add('drag');});
+  dz.addEventListener('dragleave',function(){dz.classList.remove('drag');});
+  dz.addEventListener('drop',function(e){
+    e.preventDefault();dz.classList.remove('drag');
+    var f=e.dataTransfer.files[0];if(!f)return;
+    var r=new FileReader();r.onload=function(ev){parseXL(ev.target.result,f.name);};r.readAsArrayBuffer(f);
+  });
+}
+
+// ═══ EXPORT CSV ═══
+function exportCSV(){
+  var data=getFil();if(!data.length){alert('Nessun dato');return;}
+  var cols=['anno','id','lavorante','gruppo','tipo','prov','comune','cliente','territorio','esito','priorita','data_mail','data_esito','data_scadenza','tempo_gg','in_tempo','dim','infra'];
+  var rows=[cols.join(';')];
+  data.forEach(function(r){
+    rows.push(cols.map(function(col){
+      var v=r[col]!=null?String(r[col]):'';
+      return String.fromCharCode(34)+v.split(String.fromCharCode(34)).join(String.fromCharCode(34,34))+String.fromCharCode(34);
+    }).join(';'));
+  });
+  var b=new Blob([String.fromCharCode(0xFEFF)+rows.join(String.fromCharCode(10))],{type:'text/csv;charset=utf-8;'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(b);
+  a.download='KPI_Export_'+(new Date().toISOString().slice(0,10))+'.csv';a.click();
+}
+
+// ═══ EXPORT EXCEL ENTERPRISE (ExcelJS) ═══
+async function exportExcel(){
+  var data=getFil();
+  if(!data.length){alert('Nessun dato da esportare nel periodo selezionato');return;}
+
+  // Verifica ExcelJS disponibile
+  if(typeof ExcelJS==='undefined'){
+    alert('Libreria ExcelJS non caricata. Verifica la connessione internet e riprova.');return;
+  }
+
+  var ap=PEOPLE.filter(function(p){return ACTIVE.has(p.name);});
+  var gs=S(data);
+  var pRange=PER.from?(PER.from+' \u2192 '+PER.to):'Tutti i periodi';
+  var genDate=new Date().toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  var sm={};ap.forEach(function(p){sm[p.name]=S(data.filter(function(r){return r.lavorante===p.name;}));});
+  var monthSet={};data.forEach(function(r){var d=r.data_mail;if(d&&/^\d{4}-\d{2}/.test(d))monthSet[d.slice(0,7)]=1;});
+  var months=Object.keys(monthSet).sort();
+  var MN=['','Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
+
+  var wb=new ExcelJS.Workbook();
+  wb.creator='KPI Monitor - Sirti @ TIM';
+  wb.lastModifiedBy='KPI Monitor';
+  wb.created=new Date();
+  wb.modified=new Date();
+
+  // ═══ COLORI ENTERPRISE ═══
+  var C={
+    BLUE:'0066CC', BLUE_D:'004C99', BLUE_L:'DBEAFE', BLUE_LL:'EFF6FF',
+    RED:'E60028',  RED_L:'FDE8EC',  RED_LL:'FEF2F4',
+    GREEN:'15803D',GREEN_L:'DCFCE7',GREEN_LL:'F0FDF4',
+    AMBER:'B45309',AMBER_L:'FEF3C7',
+    PURPLE:'7C3AED',PURPLE_L:'EDE9FE',
+    GRAY_H:'374151',GRAY_L:'F3F4F6',GRAY_LL:'F9FAFB',
+    GRAY_B:'D1D5DB',WHITE:'FFFFFF',BLACK:'111827',
+    // Colori persona
+    LUPOLI:'0066CC',FEROCI:'0369A1',
+    CECCHETTO:'991B1B',GENTILE:'C2560E',IMPERATORI:'78350F',TENUTA:'831843',
+  };
+
+  function pColor(name){
+    return C[name.toUpperCase()]||C.GRAY_H;
+  }
+  function pBg(name){
+    var map={LUPOLI:'DBEAFE',FEROCI:'E0F2FE',CECCHETTO:'FEE2E2',GENTILE:'FFEDD5',IMPERATORI:'FEF9C3',TENUTA:'FCE7F3'};
+    return map[name.toUpperCase()]||C.GRAY_L;
+  }
+
+  // ═══ STYLE HELPERS ═══
+  function styleHdr(cell,fg,bg,sz,al){
+    fg=fg||C.WHITE; bg=bg||C.BLUE_D; sz=sz||11; al=al||'center';
+    cell.font={bold:true,color:{argb:'FF'+fg},size:sz,name:'Calibri'};
+    cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF'+bg}};
+    cell.alignment={horizontal:al,vertical:'middle',wrapText:true};
+    cell.border={top:{style:'thin',color:{argb:'FF'+C.GRAY_B}},bottom:{style:'medium',color:{argb:'FF'+C.BLUE_D}},left:{style:'thin',color:{argb:'FF'+C.GRAY_B}},right:{style:'thin',color:{argb:'FF'+C.GRAY_B}}};
+  }
+  function styleCell(cell,fg,bg,bold,al){
+    fg=fg||C.BLACK; bg=bg||C.WHITE; al=al||'left';
+    cell.font={bold:bold||false,color:{argb:'FF'+fg},size:10,name:'Calibri'};
+    cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF'+bg}};
+    cell.alignment={horizontal:al,vertical:'middle'};
+    cell.border={top:{style:'thin',color:{argb:'FF'+C.GRAY_B}},bottom:{style:'thin',color:{argb:'FF'+C.GRAY_B}},left:{style:'thin',color:{argb:'FF'+C.GRAY_B}},right:{style:'thin',color:{argb:'FF'+C.GRAY_B}}};
+  }
+  function styleNum(cell,fg,bg,bold){
+    styleCell(cell,fg,bg,bold,'center');
+  }
+  function styleTitle(cell){
+    cell.font={bold:true,color:{argb:'FF'+C.BLUE},size:16,name:'Calibri'};
+    cell.alignment={horizontal:'left',vertical:'middle'};
+  }
+  function styleSub(cell){
+    cell.font={italic:true,size:10,color:{argb:'FF'+C.GRAY_H},name:'Calibri'};
+    cell.alignment={horizontal:'left',vertical:'middle'};
+  }
+  function styleSectionHdr(cell){
+    cell.font={bold:true,size:11,color:{argb:'FF'+C.GRAY_H},name:'Calibri'};
+    cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF'+C.GRAY_L}};
+    cell.alignment={horizontal:'left',vertical:'middle'};
+    cell.border={bottom:{style:'medium',color:{argb:'FF'+C.GRAY_B}}};
+  }
+
+  // ═══════════════════════════════════════════
+  // FOGLIO 1 — DASHBOARD KPI
+  // ═══════════════════════════════════════════
+  var ws1=wb.addWorksheet('\uD83D\uDCCA Dashboard KPI',{
+    pageSetup:{fitToPage:true,fitToWidth:1,orientation:'landscape'},
+    properties:{tabColor:{argb:'FF'+C.BLUE}}
+  });
+  ws1.columns=[
+    {width:23},{width:23},{width:26},{width:26},{width:26},{width:26},{width:26},{width:26},{width:26}
+  ];
+
+  // Titolo
+  ws1.mergeCells('A1:F1');
+  var t1=ws1.getCell('A1'); t1.value='KPI MONITOR \u2014 SIRTI @ TIM \u2014 Report di Performance';
+  styleTitle(t1); ws1.getRow(1).height=27.9;
+
+  ws1.mergeCells('A2:F2');
+  var t2=ws1.getCell('A2'); t2.value='Periodo: '+pRange+'   |   Generato: '+genDate+'   |   Risorse: '+ap.map(function(p){return p.name;}).join(', ');
+  styleSub(t2); ws1.getRow(2).height=14.1;
+  ws1.addRow([]); // spacer
+
+  // KPI GLOBALI
+  ws1.mergeCells('A4:F4');
+  var sh1=ws1.getCell('A4'); sh1.value='\u25A0  KPI AGGREGATI \u2014 GRUPPO COMPLETO \u2014 '+pRange;
+  styleSectionHdr(sh1); ws1.getRow(4).height=20;
+
+  // Header tabella KPI
+  var kpiHdrRow=ws1.addRow(['Indicatore','Valore','Descrizione estesa','','','Formula di calcolo']);
+  ws1.getRow(5).height=18;
+  ['A','B','C','D','E','F'].forEach(function(col,i){
+    var cell=kpiHdrRow.getCell(i+1);
+    styleHdr(cell,C.WHITE,C.BLUE_D,10,i===0?'left':'center');
+  });
+  ws1.mergeCells('C5:E5');
+
+  var kpiDef=[
+    ['SdF Totali',gs.n,'Totale SdF nel periodo per le risorse attive','','','COUNT(record filtrati)'],
+    ['Chiusi',gs.ch,'SdF completati con risposta al cliente ('+gs.pc+'% del totale)','','','COUNT(esito = CHIUSO)'],
+    ['% Chiusi',gs.pc+'%','Percentuale SdF chiusi sul totale','','','Chiusi / Totali \u00D7 100'],
+    ['Annullati',gs.an,'SdF cancellati prima della chiusura (stornati)','','','COUNT(esito LIKE ANNULL%)'],
+    ['RETAIL',gs.re,'Fattibilit\u00E0 per clienti finali diretti','','','COUNT(tipo = RETAIL)'],
+    ['WHOLESALE',gs.wh,'Fattibilit\u00E0 per operatori TLC (NNI/IRP)','','','COUNT(tipo = WHOLESALE)'],
+    ['Urgenti',gs.ur,'SdF con priorit\u00E0 URGENTE (timeline ridotta)','','','COUNT(priorit\u00E0 = URGENTE)'],
+    ['Standard',gs.st,'SdF con priorit\u00E0 STANDARD','','','COUNT(priorit\u00E0 = STANDARD)'],
+    ['Tempo Medio',gs.at!=null?gs.at+' gg':'-','Media giorni tra Data Mail e Data Esito','','','MEDIA(Data Esito \u2212 Data Mail)'],
+    ['% In Tempo',gs.ps!=null?gs.ps+'%':'-','% SdF chiusi entro la data di scadenza ('+gs.iy+' su '+gs.itot+')','','','In tempo / Tot.scadenza \u00D7 100'],
+    ['Int. Dimensionali',gs.di,'Totale interventi dimensionali (apparati/circuiti)','','','SOMMA(dim per SdF)'],
+    ['Int. Infrastrutturali',gs.ii,'Totale interventi infrastrutturali (fisica/DROP)','','','SOMMA(infra per SdF)'],
+  ];
+  kpiDef.forEach(function(k,ri){
+    var row=ws1.addRow(k);
+    ws1.getRow(6+ri).height=16;
+    var altBg=ri%2===0?C.WHITE:C.GRAY_LL;
+    var isGood=['Chiusi','% Chiusi','% In Tempo'].indexOf(k[0])>=0;
+    var isBad=['Annullati'].indexOf(k[0])>=0;
+    var fg=isGood?C.GREEN:isBad?C.RED:C.BLACK;
+    var bg=isGood?C.GREEN_LL:isBad?C.RED_LL:altBg;
+    styleCell(row.getCell(1),fg,bg,true,'left');
+    styleNum(row.getCell(2),fg,bg,true);
+    styleCell(row.getCell(3),C.GRAY_H,altBg,false,'left');
+    styleCell(row.getCell(4),C.GRAY_H,altBg,false,'left');
+    styleCell(row.getCell(5),C.GRAY_H,altBg,false,'left');
+    styleCell(row.getCell(6),C.GRAY_H,altBg,false,'left');
+    // % In Tempo colorazione speciale
+    if(k[0]==='% In Tempo'&&gs.ps!=null){
+      var psBg=gs.ps>=90?C.GREEN_L:gs.ps>=70?C.AMBER_L:C.RED_L;
+      var psFg=gs.ps>=90?C.GREEN:gs.ps>=70?C.AMBER:C.RED;
+      styleNum(row.getCell(2),psFg,psBg,true);
+    }
+    ws1.mergeCells('C'+(6+ri)+':E'+(6+ri));
+  });
+
+  ws1.addRow([]); // spacer
+  var spacerR=6+kpiDef.length;
+
+  // KPI PER PERSONA — tabella comparativa
+  var r2start=spacerR+1;
+  ws1.mergeCells('A'+r2start+':F'+r2start);
+  var sh2=ws1.getCell('A'+r2start); sh2.value='\u25A0  KPI PER RISORSA \u2014 CONFRONTO';
+  styleSectionHdr(sh2); ws1.getRow(r2start).height=20;
+
+  var ph=['Indicatore','Descrizione'];
+  ap.forEach(function(p){ph.push(p.name+' ('+p.gruppo.toUpperCase()+')');});
+  ph.push('BEST');
+  var phRow=ws1.addRow(ph);
+  ws1.getRow(r2start+1).height=18;
+  ph.forEach(function(h,ci){
+    var bg=ci>=2&&ci<2+ap.length?pColor(ap[ci-2].name):C.BLUE_D;
+    styleHdr(phRow.getCell(ci+1),C.WHITE,bg,10,ci>=2?'center':'left');
+  });
+
+  var perRows=[
+    {l:'SdF Totali',d:'Totale SdF gestiti',f:function(s){return s.n;},best:'max'},
+    {l:'Chiusi',d:'SdF completati',f:function(s){return s.ch;},best:'max'},
+    {l:'% Chiusi',d:'% completamento',f:function(s){return s.pc+'%';},best:'max',num:function(s){return s.pc;}},
+    {l:'Annullati',d:'SdF stornati',f:function(s){return s.an;},best:'min'},
+    {l:'Retail',d:'Fattibilit\u00E0 clienti finali',f:function(s){return s.re;},best:'max'},
+    {l:'Wholesale',d:'Fattibilit\u00E0 operatori TLC',f:function(s){return s.wh;},best:'max'},
+    {l:'Urgenti',d:'Priorit\u00E0 URGENTE',f:function(s){return s.ur;},best:'info'},
+    {l:'Tempo Medio',d:'Media gg lavorazione',f:function(s){return s.at!=null?s.at+' gg':'-';},best:'min',num:function(s){return s.at||999;}},
+    {l:'% In Tempo',d:'% rispetto scadenze',f:function(s){return s.ps!=null?s.ps+'%':'-';},best:'max',num:function(s){return s.ps||0;},target:90},
+    {l:'Int. Dim.',d:'Interventi dimensionali',f:function(s){return s.di;},best:'info'},
+    {l:'Int. Infra.',d:'Interventi infrastrutturali',f:function(s){return s.ii;},best:'info'},
+  ];
+  perRows.forEach(function(m,ri){
+    var vals=ap.map(function(p){return m.num?m.num(sm[p.name]):parseFloat(m.f(sm[p.name]))||0;});
+    var bestIdx=m.best==='max'?vals.indexOf(Math.max.apply(null,vals)):m.best==='min'?vals.indexOf(Math.min.apply(null,vals)):-1;
+    var rowData=[m.l,m.d].concat(ap.map(function(p){return m.f(sm[p.name]);})).concat([bestIdx>=0?ap[bestIdx].name:'\u2014']);
+    var row=ws1.addRow(rowData);
+    var rn=r2start+2+ri;
+    ws1.getRow(rn).height=16;
+    var altBg=ri%2===0?C.WHITE:C.GRAY_LL;
+    styleCell(row.getCell(1),C.GRAY_H,altBg,true,'left');
+    styleCell(row.getCell(2),C.GRAY_H,altBg,false,'left');
+    ap.forEach(function(p,pi){
+      var isBest=pi===bestIdx;
+      var bg=isBest?(m.best==='max'?C.GREEN_L:C.RED_L):pBg(p.name);
+      var fg=isBest?(m.best==='max'?C.GREEN:C.RED):pColor(p.name);
+      styleNum(row.getCell(3+pi),fg,bg,isBest);
+    });
+    var bestCell=row.getCell(3+ap.length);
+    styleCell(bestCell,C.BLUE,C.BLUE_L,true,'center');
+  });
+
+  ws1.addRow([]);
+  var r3start=r2start+2+perRows.length+1;
+
+  // ANALISI MENSILE
+  ws1.mergeCells('A'+r3start+':F'+r3start);
+  var sh3=ws1.getCell('A'+r3start); sh3.value='\u25A0  ANDAMENTO MENSILE';
+  styleSectionHdr(sh3); ws1.getRow(r3start).height=20;
+  var mh=['Mese'].concat(ap.map(function(p){return p.name;})).concat(['TOTALE']);
+  var mhRow=ws1.addRow(mh);
+  ws1.getRow(r3start+1).height=18;
+  mh.forEach(function(h,ci){
+    var bg=ci>=1&&ci<1+ap.length?pColor(ap[ci-1].name):C.BLUE_D;
+    styleHdr(mhRow.getCell(ci+1),C.WHITE,bg,10,ci===0?'left':'center');
+  });
+  months.forEach(function(ym,mi){
+    var mo=parseInt(ym.slice(5,7));
+    var row=[MN[mo]+' '+ym.slice(0,4)];
+    var tot=0;
+    ap.forEach(function(p){var n=data.filter(function(r){return r.lavorante===p.name&&(r.data_mail||'').slice(0,7)===ym;}).length;row.push(n);tot+=n;});
+    row.push(tot);
+    var exRow=ws1.addRow(row);
+    var altBg=mi%2===0?C.WHITE:C.GRAY_LL;
+    ws1.getRow(r3start+2+mi).height=15;
+    styleCell(exRow.getCell(1),C.GRAY_H,altBg,true,'left');
+    ap.forEach(function(p,pi){
+      var n=row[1+pi];
+      styleNum(exRow.getCell(2+pi),n>5?pColor(p.name):C.GRAY_H,n>5?pBg(p.name):altBg,n>5);
+    });
+    styleNum(exRow.getCell(2+ap.length),C.BLUE,C.BLUE_LL,true);
+  });
+  // Riga totale
+  var totRow2=['TOTALE'].concat(ap.map(function(p){return data.filter(function(r){return r.lavorante===p.name;}).length;})).concat([data.length]);
+  var totExRow=ws1.addRow(totRow2);
+  mh.forEach(function(h,ci){styleHdr(totExRow.getCell(ci+1),C.WHITE,C.GRAY_H,10,'center');});
+  ws1.getRow(r3start+2+months.length).height=18;
+
+  // ═══════════════════════════════════════════
+  // FOGLIO 2 — GRAFICI BARRE (celle colorate)
+  // ═══════════════════════════════════════════
+  var ws2=wb.addWorksheet('\uD83D\uDCC8 Grafici Barre',{
+    properties:{tabColor:{argb:'FF'+C.BLUE_D}}
+  });
+  var BAR=18;
+  ws2.columns=[{width:20}].concat(Array(BAR).fill({width:5})).concat([{width:10}]);
+
+  ws2.mergeCells('A1:'+(String.fromCharCode(65+BAR+1))+'1');
+  var wt=ws2.getCell('A1'); wt.value='GRAFICI KPI \u2014 VISUALIZZAZIONE A BARRE \u2014 '+pRange;
+  styleTitle(wt); ws2.getRow(1).height=26;
+  ws2.mergeCells('A2:'+(String.fromCharCode(65+BAR+1))+'2');
+  var wt2=ws2.getCell('A2'); wt2.value='Ogni barra mostra la proporzione rispetto al massimo del gruppo. Le celle colorate rappresentano il valore.';
+  styleSub(wt2); ws2.getRow(2).height=14;
+  ws2.addRow([]);
+
+  var gmetrics=[
+    {l:'\u25A0 SdF Totali',k:'n'},
+    {l:'\u25A0 Chiusi',k:'ch'},
+    {l:'\u25A0 % Chiusi',k:'pc',suffix:'%'},
+    {l:'\u25A0 Retail',k:'re'},
+    {l:'\u25A0 Wholesale',k:'wh'},
+    {l:'\u25A0 Urgenti',k:'ur'},
+    {l:'\u25A0 Tempo Medio',k:'at',suffix:' gg'},
+    {l:'\u25A0 % In Tempo',k:'ps',suffix:'%'},
+    {l:'\u25A0 Int. Dimensionali',k:'di'},
+    {l:'\u25A0 Int. Infrastrutturali',k:'ii'},
+  ];
+
+  var curR=4;
+  gmetrics.forEach(function(m){
+    var vals=ap.map(function(p){var v=sm[p.name][m.k];return v!=null?v:0;});
+    var maxV=Math.max.apply(null,vals)||1;
+
+    // Header metrica
+    var hRow=ws2.addRow([m.l]);
+    ws2.getRow(curR).height=18;
+    var hCell=hRow.getCell(1);
+    hCell.value=m.l;
+    hCell.font={bold:true,size:11,color:{argb:'FF'+C.WHITE},name:'Calibri'};
+    hCell.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF'+C.BLUE_D}};
+    hCell.alignment={horizontal:'left',vertical:'middle'};
+    // Merge header across all bar columns
+    ws2.mergeCells(curR,1,curR,BAR+2);
+    curR++;
+
+    ap.forEach(function(p){
+      var v=sm[p.name][m.k]!=null?sm[p.name][m.k]:0;
+      var filled=maxV>0?Math.round(v/maxV*BAR):0;
+      var pct=maxV>0?Math.round(v/maxV*100):0;
+      var dispV=v+(m.suffix||'');
+      var pc2=pColor(p.name);
+      var pb2=pBg(p.name);
+
+      var bRow=ws2.addRow([]);
+      ws2.getRow(curR).height=16;
+
+      // Nome risorsa
+      var nc=bRow.getCell(1);
+      nc.value=p.name+'  ('+dispV+')';
+      nc.font={bold:true,size:10,color:{argb:'FF'+pc2},name:'Calibri'};
+      nc.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF'+pb2}};
+      nc.alignment={horizontal:'left',vertical:'middle'};
+      nc.border={top:{style:'thin',color:{argb:'FF'+C.GRAY_B}},bottom:{style:'thin',color:{argb:'FF'+C.GRAY_B}},right:{style:'thin',color:{argb:'FF'+C.GRAY_B}}};
+
+      // Celle barra
+      for(var ci=0;ci<BAR;ci++){
+        var bc=bRow.getCell(2+ci);
+        bc.value='';
+        if(ci<filled){
+          bc.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF'+pc2}};
+          bc.border={top:{style:'thin',color:{argb:'FF'+pc2}},bottom:{style:'thin',color:{argb:'FF'+pc2}}};
+        } else {
+          bc.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF'+C.GRAY_LL}};
+          bc.border={top:{style:'thin',color:{argb:'FF'+C.GRAY_B}},bottom:{style:'thin',color:{argb:'FF'+C.GRAY_B}}};
+        }
+      }
+      // Percentuale
+      var pc3=bRow.getCell(BAR+2);
+      pc3.value=pct+'%';
+      pc3.font={bold:true,size:10,color:{argb:'FF'+pc2},name:'Calibri'};
+      pc3.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF'+pb2}};
+      pc3.alignment={horizontal:'center',vertical:'middle'};
+      pc3.border={top:{style:'thin',color:{argb:'FF'+C.GRAY_B}},bottom:{style:'thin',color:{argb:'FF'+C.GRAY_B}},left:{style:'thin',color:{argb:'FF'+C.GRAY_B}}};
+      curR++;
+    });
+
+    // Valore numerico sopra le celle piene (nella cella centrale)
+    ap.forEach(function(p,pi){
+      var v=sm[p.name][m.k]!=null?sm[p.name][m.k]:0;
+      var filled=maxV>0?Math.round(v/maxV*BAR):0;
+      var midCell=Math.floor(filled/2)+1;
+      if(filled>0&&midCell>=1&&midCell<=BAR){
+        var cell=ws2.getRow(curR-ap.length+pi).getCell(1+midCell);
+        cell.value=v+(m.suffix||'');
+        cell.font={bold:true,size:9,color:{argb:'FF'+C.WHITE},name:'Calibri'};
+        cell.alignment={horizontal:'center',vertical:'middle'};
+      }
+    });
+
+    ws2.addRow([]); curR++;
+  });
+
+  // ═══════════════════════════════════════════
+  // FOGLIO 3 — DETTAGLIO SdF
+  // ═══════════════════════════════════════════
+  var ws3=wb.addWorksheet('\uD83D\uDCCB Dettaglio SdF',{
+    properties:{tabColor:{argb:'FF185C6E'}}
+  });
+  ws3.columns=[
+    {width:9.71},{width:17.29},{width:13.43},{width:11.43},{width:10.14},
+    {width:14.00},{width:25.71},{width:67.86},{width:13.14},{width:25.71},
+    {width:11.43},{width:12.86},{width:15.29},{width:12.57},{width:7.57},{width:12.86},{width:9.14},{width:9.57}
+  ];
+
+  // Titolo
+  ws3.mergeCells('A1:R1');
+  var dt=ws3.getCell('A1'); dt.value='DETTAGLIO SdF \u2014 '+pRange+' \u2014 '+data.length+' record';
+  styleTitle(dt); ws3.getRow(1).height=24.0;
+
+  // Header
+  var detHdr=['Anno','SdF (N. Pratica)','Lavorante','Gruppo','Tipo','Prov','Comune','Cliente','Territorio','Esito','Priorit\u00E0','Data Mail','Data Esito','Scadenza','Gg','In Tempo','Dim.','Infra.'];
+  var dhRow=ws3.addRow(detHdr);
+  ws3.getRow(2).height=18;
+  detHdr.forEach(function(h,ci){
+    styleHdr(dhRow.getCell(ci+1),C.WHITE,C.BLUE_D,10,'center');
+  });
+
+  // Attiva filtri automatici
+  ws3.autoFilter={from:{row:2,column:1},to:{row:2,column:18}};
+
+  // Righe dati
+  data.forEach(function(r,ri){
+    var isS=r.gruppo==='sirti',isH=r.gruppo==='huawei';
+    var altBg=ri%2===0?C.WHITE:C.GRAY_LL;
+    var rowData=[r.anno,r.id,r.lavorante,r.gruppo.toUpperCase(),r.tipo,r.prov,r.comune,r.cliente,r.territorio,r.esito,r.priorita,r.data_mail||'',r.data_esito||'',r.data_scadenza||'',r.tempo_gg!=null?r.tempo_gg:'',r.in_tempo===true?'\u2714 SI':r.in_tempo===false?'\u2716 NO':'',r.dim,r.infra];
+    var exRow=ws3.addRow(rowData);
+    ws3.getRow(ri+3).height=15;
+
+    // Anno
+    styleNum(exRow.getCell(1),C.GRAY_H,altBg,false);
+    // SdF
+    styleCell(exRow.getCell(2),C.GRAY_H,altBg,true,'left');
+    // Lavorante - colore gruppo
+    styleCell(exRow.getCell(3),isS?C.BLUE:C.RED,isS?C.BLUE_L:C.RED_L,true,'left');
+    // Gruppo badge
+    styleCell(exRow.getCell(4),isS?C.BLUE:C.RED,isS?C.BLUE_L:C.RED_L,true,'center');
+    // Tipo
+    var tipoFg=r.tipo==='RETAIL'?C.BLUE:r.tipo==='WHOLESALE'?C.PURPLE:C.GRAY_H;
+    var tipoBg=r.tipo==='RETAIL'?C.BLUE_L:r.tipo==='WHOLESALE'?C.PURPLE_L:altBg;
+    styleCell(exRow.getCell(5),tipoFg,tipoBg,false,'center');
+    // Prov
+    styleCell(exRow.getCell(6),C.GRAY_H,altBg,false,'center');
+    // Comune, Cliente, Territorio
+    [7,8,9].forEach(function(ci){styleCell(exRow.getCell(ci),C.GRAY_H,altBg,false,'left');});
+    // Esito
+    var esiFg=r.esito==='CHIUSO'?C.GREEN:r.esito.indexOf('ANNULL')>=0?C.RED:C.AMBER;
+    var esiBg=r.esito==='CHIUSO'?C.GREEN_L:r.esito.indexOf('ANNULL')>=0?C.RED_L:C.AMBER_L;
+    styleCell(exRow.getCell(10),esiFg,esiBg,true,'center');
+    // Priorita
+    var priFg=r.priorita==='URGENTE'?C.RED:C.GRAY_H;
+    var priBg=r.priorita==='URGENTE'?C.RED_L:altBg;
+    styleCell(exRow.getCell(11),priFg,priBg,r.priorita==='URGENTE','center');
+    // Date
+    [12,13,14].forEach(function(ci){styleCell(exRow.getCell(ci),C.GRAY_H,altBg,false,'center');});
+    // Giorni
+    styleNum(exRow.getCell(15),C.GRAY_H,altBg,false);
+    // In Tempo
+    var itFg=r.in_tempo===true?C.GREEN:r.in_tempo===false?C.RED:C.GRAY_H;
+    var itBg=r.in_tempo===true?C.GREEN_L:r.in_tempo===false?C.RED_L:altBg;
+    styleCell(exRow.getCell(16),itFg,itBg,true,'center');
+    // Dim, Infra
+    styleNum(exRow.getCell(17),C.GRAY_H,altBg,false);
+    styleNum(exRow.getCell(18),C.GRAY_H,altBg,false);
+  });
+
+  // Congela riga header
+  ws3.views=[{state:'frozen',ySplit:2}];
+
+  // ═══════════════════════════════════════════
+  // FOGLIO 4 — KPI INDIVIDUALE
+  // ═══════════════════════════════════════════
+  var ws4=wb.addWorksheet('\uD83D\uDC64 KPI Individuale',{
+    properties:{tabColor:{argb:'FF'+C.GREEN}}
+  });
+  ws4.columns=[{width:28},{width:28}].concat(ap.map(function(){return{width:20};})).concat([{width:20}]);
+
+  ws4.mergeCells('A1:'+(String.fromCharCode(65+1+ap.length+1))+'1');
+  var kt=ws4.getCell('A1'); kt.value='KPI INDIVIDUALE PER RISORSA \u2014 '+pRange;
+  styleTitle(kt); ws4.getRow(1).height=24;
+  ws4.addRow([]);
+
+  var kh2=['Indicatore','Descrizione'].concat(ap.map(function(p){return p.name+' ('+p.gruppo.toUpperCase()+')';})).concat(['BEST']);
+  var kh2Row=ws4.addRow(kh2);
+  ws4.getRow(3).height=18;
+  kh2.forEach(function(h,ci){
+    var bg=ci>=2&&ci<2+ap.length?pColor(ap[ci-2].name):C.BLUE_D;
+    styleHdr(kh2Row.getCell(ci+1),C.WHITE,bg,10,ci>=2?'center':'left');
+  });
+
+  var kpiRows2=[
+    {l:'SdF Totali',d:'Totale SdF gestiti',f:function(s){return s.n;},best:'max'},
+    {l:'Chiusi',d:'SdF completati',f:function(s){return s.ch;},best:'max'},
+    {l:'% Chiusi',d:'% completamento (target >80%)',f:function(s){return s.pc+'%';},best:'max',num:function(s){return s.pc;}},
+    {l:'Annullati',d:'SdF stornati',f:function(s){return s.an;},best:'min'},
+    {l:'Retail',d:'Fattibilit\u00E0 clienti finali',f:function(s){return s.re;},best:'max'},
+    {l:'Wholesale',d:'Fattibilit\u00E0 operatori TLC',f:function(s){return s.wh;},best:'max'},
+    {l:'Urgenti',d:'Priorit\u00E0 URGENTE',f:function(s){return s.ur;},best:'info'},
+    {l:'Tempo Medio (gg)',d:'Media giorni lavorazione',f:function(s){return s.at!=null?s.at+' gg':'-';},best:'min',num:function(s){return s.at||999;}},
+    {l:'% In Tempo',d:'% rispetto scadenze (target >90%)',f:function(s){return s.ps!=null?s.ps+'%':'-';},best:'max',num:function(s){return s.ps||0;},target:90},
+    {l:'SdF In Tempo',d:'N. SdF chiusi entro scadenza',f:function(s){return s.iy;},best:'max'},
+    {l:'Tot. con Scadenza',d:'SdF con data scadenza',f:function(s){return s.itot;},best:'info'},
+    {l:'Int. Dimensionali',d:'Interventi dim. totali',f:function(s){return s.di;},best:'info'},
+    {l:'Int. Infrastrutturali',d:'Interventi infra. totali',f:function(s){return s.ii;},best:'info'},
+  ];
+  kpiRows2.forEach(function(m,ri){
+    var vals=ap.map(function(p){return m.num?m.num(sm[p.name]):(parseFloat(m.f(sm[p.name]))||0);});
+    var bestIdx=m.best==='max'?vals.indexOf(Math.max.apply(null,vals)):m.best==='min'?vals.indexOf(Math.min.apply(null,vals)):-1;
+    var rowData=[m.l,m.d].concat(ap.map(function(p){return m.f(sm[p.name]);})).concat([bestIdx>=0?ap[bestIdx].name:'\u2014']);
+    var exRow=ws4.addRow(rowData);
+    var rn=4+ri;
+    ws4.getRow(rn).height=16;
+    var altBg=ri%2===0?C.WHITE:C.GRAY_LL;
+    styleCell(exRow.getCell(1),C.GRAY_H,altBg,true,'left');
+    styleCell(exRow.getCell(2),C.GRAY_H,altBg,false,'left');
+    ap.forEach(function(p,pi){
+      var isBest=pi===bestIdx;
+      var bg=isBest?(m.best==='max'?C.GREEN_L:C.RED_L):pBg(p.name);
+      var fg=isBest?(m.best==='max'?C.GREEN:C.RED):pColor(p.name);
+      styleNum(exRow.getCell(3+pi),fg,bg,isBest);
+    });
+    styleCell(exRow.getCell(3+ap.length),C.BLUE,C.BLUE_L,true,'center');
+  });
+  ws4.views=[{state:'frozen',ySplit:3}];
+
+  // ═══════════════════════════════════════════
+  // FOGLIO 5 — LEGENDA
+  // ═══════════════════════════════════════════
+  var ws5=wb.addWorksheet('\uD83D\uDCD6 Legenda',{
+    properties:{tabColor:{argb:'FF92400E'}}
+  });
+  ws5.columns=[{width:22},{width:4},{width:47},{width:4},{width:57}];
+
+  ws5.mergeCells('A1:E1');
+  var lt=ws5.getCell('A1'); lt.value='LEGENDA COMPLETA \u2014 KPI Monitor Sirti @ TIM';
+  styleTitle(lt); ws5.getRow(1).height=26;
+  ws5.addRow([]);
+
+  var legData=[
+    ['ABBREVIAZIONI','','SIGNIFICATO','','DESCRIZIONE ESTESA'],
+    ['S','','= Sirti S.p.A.','','Azienda Sirti (commessa TIM) \u2014 colore BLU nei grafici'],
+    ['H','','= Huawei Technologies','','Azienda Huawei (commessa TIM) \u2014 colore ROSSO/CALDO nei grafici'],
+    ['R','','= RETAIL','','Fattibilit\u00E0 per clienti finali diretti (non operatori)'],
+    ['W','','= WHOLESALE','','Fattibilit\u00E0 per operatori TLC tramite NNI o IRP'],
+    ['URG','','= Priorit\u00E0 URGENTE','','Timeline di risposta ridotta, massima priorit\u00E0'],
+    ['STD','','= Priorit\u00E0 STANDARD','','Timeline di risposta normale'],
+    ['Gg','','= Giorni lavorazione','','Data Esito \u2212 Data Mail (velocit\u00E0 di risposta)'],
+    ['T.','','= In Tempo','','\u2714 SI = chiuso entro scadenza  |  \u2716 NO = chiuso dopo scadenza'],
+    ['D.','','= Int. Dimensionali','','Variazioni su apparati / circuiti DWDM'],
+    ['I.','','= Int. Infrastrutturali','','Lavori su infrastruttura fisica (DROP, posa cavi)'],
+    ['SdF','','= Studio di Fattibilit\u00E0','','Documento tecnico per valutare realizzabilit\u00E0 collegamento'],
+    [],
+    ['METRICHE E FORMULE','','FORMULA','','INTERPRETAZIONE'],
+    ['SdF Totali','','COUNT(record)','','Quantit\u00E0 totale SdF gestiti nel periodo'],
+    ['Chiusi','','COUNT(esito=CHIUSO)','','Completati \u2014 indicatore di produttivit\u00E0'],
+    ['% Chiusi','','Chiusi / Totali \u00D7 100','','Tasso di completamento \u2014 target >80%'],
+    ['Tempo Medio','','MEDIA(Esito \u2212 Mail)','','Velocit\u00E0 media \u2014 target: minimizzare i giorni'],
+    ['% In Tempo','','In tempo / Tot.scad. \u00D7 100','','Rispetto scadenze \u2014 target >90%'],
+    [],
+    ['COLORI RISORSE','','COLORE FILL','','GAMMA'],
+    ['LUPOLI (Sirti)','','#0066CC','','\uD83D\uDD35 Blu TIM ufficiale'],
+    ['FEROCI (Sirti)','','#38BDF8','','\uD83D\uDC99 Azzurro cielo'],
+    ['CECCHETTO (Huawei)','','#DC2626','','\uD83D\uDD34 Rosso vivo'],
+    ['GENTILE (Huawei)','','#EA7316','','\uD83D\uDFE0 Arancio'],
+    ['IMPERATORI (Huawei)','','#CA8A04','','\uD83D\uDFE1 Ambra/oro'],
+    ['TENUTA (Huawei)','','#BE185D','','\uD83D\uDFE3 Fucsia/rosa'],
+    [],
+    ['CONTATTI','','','',''],
+    ['Sviluppato da:','','Giuseppe Lupoli (Sirti @ TIM)','',''],
+    ['Commessa:','','Sirti S.p.A. per Telecom Italia \u2014 Gestione SdF Rete Ottica','',''],
+  ];
+  var isHdr=[true,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false];
+  legData.forEach(function(row,ri){
+    var exRow=ws5.addRow(row);
+    ws5.getRow(ri+3).height=15;
+    if(isHdr[ri]&&row[0]){
+      [1,2,3,4,5].forEach(function(ci){styleSectionHdr(exRow.getCell(ci));});
+    } else if(row[0]) {
+      styleCell(exRow.getCell(1),C.BLUE,C.GRAY_LL,true,'left');
+      styleCell(exRow.getCell(3),C.GRAY_H,C.WHITE,false,'left');
+      styleCell(exRow.getCell(5),C.GRAY_H,C.WHITE,false,'left');
+    }
+  });
+
+  // ═══ DOWNLOAD ═══
+  var buf=await wb.xlsx.writeBuffer();
+  var blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  var fname='KPI_Report_Sirti_TIM_'+(new Date().toISOString().slice(0,10))+'.xlsx';
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=fname;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+</script>
+</body>
+</html>
