@@ -2,8 +2,13 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>KPI Monitor v4.2 — Sirti @ TIM</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="Lupoli Giuseppe">
+<meta name="description" content="KPI Monitor — Sirti @ TIM. Analisi performance SdF per risorse Sirti e Huawei. Sviluppato da Lupoli Giuseppe.">
+<title>📊 KPI Monitor — Sirti @ TIM</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230066CC'/%3E%3Crect x='10' y='60' width='16' height='28' rx='3' fill='%23ffffff' opacity='.9'/%3E%3Crect x='30' y='44' width='16' height='44' rx='3' fill='%2338BDF8'/%3E%3Crect x='50' y='28' width='16' height='60' rx='3' fill='%2300CC88'/%3E%3Crect x='70' y='38' width='16' height='50' rx='3' fill='%23FFD700' opacity='.9'/%3E%3Cline x1='8' y1='90' x2='92' y2='90' stroke='white' stroke-width='3' opacity='.5' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="shortcut icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230066CC'/%3E%3Crect x='10' y='60' width='16' height='28' rx='3' fill='%23ffffff' opacity='.9'/%3E%3Crect x='30' y='44' width='16' height='44' rx='3' fill='%2338BDF8'/%3E%3Crect x='50' y='28' width='16' height='60' rx='3' fill='%2300CC88'/%3E%3Crect x='70' y='38' width='16' height='50' rx='3' fill='%23FFD700' opacity='.9'/%3E%3Cline x1='8' y1='90' x2='92' y2='90' stroke='white' stroke-width='3' opacity='.5' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230066CC'/%3E%3Crect x='10' y='60' width='16' height='28' rx='3' fill='%23ffffff' opacity='.9'/%3E%3Crect x='30' y='44' width='16' height='44' rx='3' fill='%2338BDF8'/%3E%3Crect x='50' y='28' width='16' height='60' rx='3' fill='%2300CC88'/%3E%3Crect x='70' y='38' width='16' height='50' rx='3' fill='%23FFD700' opacity='.9'/%3E%3Cline x1='8' y1='90' x2='92' y2='90' stroke='white' stroke-width='3' opacity='.5' stroke-linecap='round'/%3E%3C/svg%3E">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -195,6 +200,13 @@ body{font-family:var(--font);background:var(--bg);color:var(--g800);min-height:1
 
 /* ── PERSON PANELS ── */
 .pp{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;padding:.75rem 1rem;}
+.gkpi-card{flex:1;min-width:190px;background:var(--w);border-radius:var(--r2);overflow:hidden;box-shadow:var(--sh1);}
+.gkpi-hdr{padding:.45rem .8rem;color:#fff;font-weight:800;font-size:.78rem;display:flex;align-items:center;gap:.35rem;flex-wrap:wrap;}
+.gkpi-body{display:grid;grid-template-columns:repeat(3,1fr);}
+.gkpi-cell{padding:.4rem .5rem;border-right:1px solid rgba(0,0,0,.06);border-bottom:1px solid var(--border);}
+.gkpi-cell:last-child,.gkpi-cell:nth-child(3n){border-right:none;}
+.gkpi-v{font-size:1.1rem;font-weight:800;line-height:1;}
+.gkpi-l{font-size:.56rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--g500);margin-top:.1rem;}
 .ppanel{background:var(--w);border:1.5px solid var(--border);border-radius:var(--r2);overflow:visible;}
 .pph{display:flex;align-items:center;gap:.38rem;padding:.5rem .75rem;border-bottom:1px solid var(--border);font-size:.8rem;font-weight:700;}
 .pptag{font-size:.58rem;font-weight:700;text-transform:uppercase;margin-left:auto;padding:.1rem .32rem;border-radius:3px;}
@@ -342,10 +354,10 @@ tbody tr:nth-child(even){background:rgba(0,0,0,.01);}
 <!-- TOP BAR -->
 <div class="tb">
   <div class="brand">
-    <div class="brand-box">K</div>
+    <div class="brand-box" data-tip="KPI Monitor&#10;Sirti @ TIM&#10;Sviluppato da Lupoli Giuseppe">📊</div>
     <div>
-      <div class="brand-name">KPI Monitor</div>
-      <div class="brand-desc">Sirti @ TIM — Gestione Commessa</div>
+      <div class="brand-name" style="font-size:.96rem;letter-spacing:-.01em;">KPI Monitor</div>
+      <div class="brand-desc" style="font-size:.62rem;">Sirti @ TIM &nbsp;·&nbsp; Gestione Commessa &nbsp;·&nbsp; <span style="color:#0066CC;font-weight:600;">Lupoli Giuseppe</span></div>
     </div>
   </div>
   <div class="tb-div"></div>
@@ -474,28 +486,6 @@ tbody tr:nth-child(even){background:rgba(0,0,0,.01);}
       </div>
 
       <!-- LEGENDA INTEGRATA -->
-      <div style="background:var(--g50);border-top:1px solid var(--border);padding:.6rem 1rem;">
-        <div style="font-size:.68rem;font-weight:700;color:var(--g600);margin-bottom:.32rem;">
-          📖 Legenda abbreviazioni
-          <span class="info-pill" data-tip="Hover su ogni voce&#10;per la spiegazione completa.">ℹ</span>
-        </div>
-        <div class="leg-grid">
-          <div class="leg-r" data-tip="S = Sirti S.p.A.&#10;H = Huawei Technologies&#10;(azienda di appartenenza del lavorante)"><span class="leg-k">S / H</span><span class="leg-v">Sirti / Huawei</span></div>
-          <div class="leg-r" data-tip="R = RETAIL: fattibilità per clienti finali diretti&#10;W = WHOLESALE: fattibilità per operatori TLC&#10;tramite interfacce NNI o IRP"><span class="leg-k">R / W</span><span class="leg-v">Retail / Wholesale</span></div>
-          <div class="leg-r" data-tip="URG = Priorità URGENTE&#10;(timeline di risposta ridotta, priorità massima)&#10;STD = Priorità STANDARD (normale)"><span class="leg-k">URG / STD</span><span class="leg-v">Urgente / Standard</span></div>
-          <div class="leg-r" data-tip="Gg = Giorni di lavorazione&#10;= Data Esito - Data Mail&#10;Indica la velocità di risposta"><span class="leg-k">Gg</span><span class="leg-v">Giorni Mail→Esito</span></div>
-          <div class="leg-r" data-tip="T. = In Tempo rispetto alla scadenza&#10;✔ = SdF chiuso ENTRO la data di scadenza&#10;✖ = SdF chiuso DOPO la data di scadenza"><span class="leg-k">T. ✔/✖</span><span class="leg-v">In Tempo / Fuori scadenza</span></div>
-          <div class="leg-r" data-tip="D. = Interventi Dimensionali&#10;Richieste di variazione su apparati o circuiti DWDM&#10;Indicatore di complessità tecnica"><span class="leg-k">D. / I.</span><span class="leg-v">Int.Dim. / Infrastrutturali</span></div>
-          <div class="leg-r" data-tip="% SdF chiusi entro la data di scadenza&#10;= In Tempo / Tot. con scadenza × 100&#10;Target aziendale: >90%"><span class="leg-k">% Scad.</span><span class="leg-v">% SdF entro scadenza</span></div>
-          <div class="leg-r" data-tip="Media dei giorni di lavorazione&#10;= MEDIA(Data Esito - Data Mail)&#10;Più basso = risposta più veloce"><span class="leg-k">Tempo Med.</span><span class="leg-v">Media giorni lavorazione</span></div>
-          <div class="leg-r" data-tip="SdF = Studio di Fattibilità&#10;Documento tecnico che valuta la possibilità&#10;di realizzare un collegamento in fibra ottica"><span class="leg-k">SdF</span><span class="leg-v">Studio di Fattibilità</span></div>
-          <div class="leg-r" data-tip="Mail = Data invio mail SdF&#10;Corrisponde alla data di avvio della lavorazione&#10;da parte del lavorante"><span class="leg-k">Mail</span><span class="leg-v">Data avvio lavorazione</span></div>
-          <div class="leg-r" data-tip="CHIUSO = SdF completato con risposta&#10;al cliente o all'operatore&#10;(esito positivo o negativo)"><span class="leg-k">CHIUSO</span><span class="leg-v">SdF completato</span></div>
-          <div class="leg-r" data-tip="ANNULLATO = SdF cancellato&#10;prima della chiusura (stornato).&#10;Non conta nel tempo medio."><span class="leg-k">ANNULLATO</span><span class="leg-v">SdF cancellato/stornato</span></div>
-        </div>
-      </div>
-    </div>
-
     <div class="sh">📊 KPI Aggregati <span class="sh-info" data-tip="Indicatori chiave per le risorse attive&#10;nel periodo selezionato.&#10;Hover su ogni box per la formula.">i</span></div>
     <div class="card" style="margin-bottom:.6rem;"><div class="kg" id="kpiGlobal"></div></div>
 
@@ -511,10 +501,13 @@ tbody tr:nth-child(even){background:rgba(0,0,0,.01);}
         data-tip="Heatmap giorni per mese.&#10;Intensità colore = numero SdF&#10;completati in quel giorno.">📅 Timeline</button>
       <button class="stab"    onclick="showSec('tabella',this)"
         data-tip="Tabella completa con tutti i SdF.&#10;Filtrabile, ordinabile, ricercabile.&#10;Esportabile in CSV o Excel.">📋 Dettaglio SdF</button>
+      <button class="stab" onclick="showSec('gruppi',this)" data-tip="KPI aggregati per gruppo&#10;(Sirti, Huawei, TIM).">👥 Gruppi</button>
+      <button class="stab" onclick="showSec('guida',this)" data-tip="Mini-guida al tool:&#10;legenda, KPI, come leggere&#10;i grafici e i confronti.">📖 Guida</button>
     </div>
 
     <!-- PER PERSONA -->
     <div class="spane on" id="sec-persone">
+      <div id="groupKpiWrap" style="display:flex;gap:.6rem;margin-bottom:.6rem;flex-wrap:wrap;"></div>
       <div class="card"><div class="pp" id="personPanels"></div></div>
     </div>
 
@@ -589,15 +582,329 @@ tbody tr:nth-child(even){background:rgba(0,0,0,.01);}
       </div>
     </div>
 
-    <div style="margin-top:.65rem;display:flex;gap:.35rem;flex-wrap:wrap;">
-      <button class="btn btn-gh btn-sm" onclick="openModal()"
-        data-tip="Aggiungi una risorsa al gruppo&#10;specificando nome e azienda.">+ Aggiungi risorsa</button>
-      <button class="btn btn-gh btn-sm" onclick="document.getElementById('fileInput').click()"
-        data-tip="Ricarica un nuovo file Excel&#10;mantenendo le impostazioni correnti.">🔄 Ricarica Excel</button>
+    <div class="spane" id="sec-gruppi">
+      <div id="groupKpiWrap2" style="display:flex;gap:.6rem;margin-bottom:.6rem;flex-wrap:wrap;"></div>
+      <div class="card" style="margin-bottom:.6rem;">
+        <div class="card-hdr">
+          <span class="card-hdr-title">📊 Confronto tra Gruppi</span>
+          <div style="margin-left:auto;display:flex;gap:.3rem;" id="grpChartBtns">
+            <button class="pill on" onclick="setGrpChart('bar',this)">📊 Barre</button>
+            <button class="pill" onclick="setGrpChart('pie',this)">🥧 Distribuzione</button>
+          </div>
+        </div>
+        <div class="chart-wrap" id="grpChartContainer"></div>
+      </div>
+      <div class="card"><div class="bg2" id="grpBarsGrid"></div></div>
     </div>
+
+    <!-- GUIDA -->
+    <div class="spane" id="sec-guida">
+      <div style="max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:.75rem;padding:.2rem;">
+
+        <!-- ❶ AVVIO RAPIDO -->
+        <div class="card" style="border-left:4px solid #0066CC;">
+          <div class="card-hdr"><span class="card-hdr-title">🚀 Avvio rapido — 5 passi</span></div>
+          <div style="padding:.7rem 1rem;font-size:.82rem;line-height:1.65;color:var(--g700);">
+            <div style="display:grid;grid-template-columns:28px 1fr;gap:.35rem .6rem;align-items:start;">
+              <div style="background:#0066CC;color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.78rem;margin-top:.1rem;">1</div>
+              <div data-tip="Trascina il file .xlsx nella zona tratteggiata oppure clicca per aprire il selettore file. Il tool legge automaticamente i fogli SDF Centro 2025 e SDF Centro+SUD 2026."><strong>Carica il file Excel</strong> — trascina o clicca nella zona tratteggiata di avvio. Il tool riconosce automaticamente i fogli <em>SDF Centro 2025</em> e <em>SDF Centro+SUD 2026</em>. Colonna G = Lavorante · Colonna J = Data Mail.</div>
+              <div style="background:#0066CC;color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.78rem;margin-top:.1rem;">2</div>
+              <div data-tip="Ogni chip colorato rappresenta una risorsa. Clic = attiva/disattiva. Le risorse disattivate sono grigie e non entrano nei calcoli."><strong>Attiva/disattiva risorse</strong> — nella barra "👥 Risorse monitorate" i chip colorati identificano le risorse. 🔵 Sirti · 🔴 Huawei · 🟢 TIM. Clicca per includere o escludere dall'analisi.</div>
+              <div style="background:#0066CC;color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.78rem;margin-top:.1rem;">3</div>
+              <div data-tip="Usa i pulsanti rapidi oppure Personalizzato per inserire un intervallo date preciso. La data di riferimento è sempre la Data Mail (colonna J del file Excel)."><strong>Imposta il periodo</strong> — usa i bottoni rapidi (Tutti · Oggi · Settimana · Mese · 2025 · 2026) oppure <em>Personalizzato ▾</em> per un intervallo preciso. La data di riferimento è la <strong>Data Mail</strong> (colonna J).</div>
+              <div style="background:#0066CC;color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.78rem;margin-top:.1rem;">4</div>
+              <div data-tip="I filtri Tipo, Priorità ed Esito si combinano tra loro. Il bottone ↺ Reset azzera periodo, filtri e selezione risorse."><strong>Filtra i dati</strong> — usa i selettori Tipo (Retail/Wholesale), Priorità (Urgente/Standard), Esito (Chiuso/Annullato). Il pulsante ↺ Reset azzera tutto. I filtri si combinano tra loro.</div>
+              <div style="background:#0066CC;color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.78rem;margin-top:.1rem;">5</div>
+              <div data-tip="Ogni tab mostra una vista diversa degli stessi dati filtrati. Passa da un tab all'altro liberamente — i filtri vengono mantenuti."><strong>Esplora le sezioni</strong> — usa i tab 👤 Per Persona · 📈 Grafici · 📊 Confronto · 📅 Timeline · 📋 Dettaglio SdF · 👥 Gruppi. I filtri si applicano a tutte le sezioni.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ❷ SEZIONI -->
+        <div class="card">
+          <div class="card-hdr"><span class="card-hdr-title">📂 Guida alle sezioni</span></div>
+          <div style="padding:.5rem 1rem;display:flex;flex-direction:column;gap:.55rem;font-size:.8rem;">
+            <div style="border:1px solid var(--border);border-radius:6px;overflow:hidden;">
+              <div style="background:#0066CC;color:#fff;padding:.3rem .7rem;font-weight:700;font-size:.78rem;">👤 Per Persona</div>
+              <div style="padding:.45rem .7rem;color:var(--g700);line-height:1.6;">
+                Mostra i KPI di ogni risorsa in modo visivo e immediato. La sezione si divide in due parti:
+                <ul style="margin:.3rem 0 0;padding-left:1.2rem;">
+                  <li data-tip="Le card gruppo aggregano tutti i membri attivi del gruppo. Hover sulle celle per la formula dettagliata."><strong>Card KPI di gruppo</strong> — in cima appaiono le card aggregate per Sirti, Huawei e TIM. Ogni card ha 9 celle: SdF tot · Chiusi · % chiusi · Retail · Wholesale · Urgenti · Tempo med · % scadenza · Int. tot. Hover su ogni cella per formula e dettaglio.</li>
+                  <li style="margin-top:.25rem;" data-tip="Le schede individuali mostrano gli stessi 9 KPI ma per singola risorsa, con barra comparativa che indica il posizionamento rispetto al massimo del gruppo."><strong>Schede individuali</strong> — 7 card in griglia 4+3, una per risorsa. Ogni scheda mostra: nome con badge gruppo, 9 KPI colorati, barra comparativa rispetto al massimo del gruppo. Il colore della barra rispecchia il gruppo di appartenenza.</li>
+                </ul>
+              </div>
+            </div>
+            <div style="border:1px solid var(--border);border-radius:6px;overflow:hidden;">
+              <div style="background:#7C3AED;color:#fff;padding:.3rem .7rem;font-weight:700;font-size:.78rem;">📈 Grafici</div>
+              <div style="padding:.45rem .7rem;color:var(--g700);line-height:1.6;">
+                Due modalità selezionabili con i bottoni 📊 Colonne e 🥧 Distribuzione:
+                <ul style="margin:.3rem 0 0;padding-left:1.2rem;">
+                  <li data-tip="Ogni metrica ha un blocco con una barra per risorsa. L'altezza è proporzionale al massimo. Hover sulla barra per il valore esatto."><strong>Colonne</strong> — 7 metriche affiancate (SdF tot · Chiusi · % Chiusi · Retail · Wholesale · Urgenti · Tempo Med · % Scadenza · Int.Dim · Int.Infra.). Per ogni metrica, una barra per risorsa. Colori di gruppo.</li>
+                  <li style="margin-top:.25rem;" data-tip="4 torte: SdF Totali, Chiusi, % In Tempo, Int.Dim+Infra. Ogni fetta = una risorsa. Iniziale dentro la fetta, % nell'etichetta esterna. Arco minimo garantito per Angotti (1 SdF)."><strong>Distribuzione</strong> — 4 grafici a torta: SdF Totali · Chiusi · % In Tempo · Int.Dim.+Infra. Ogni fetta rappresenta la proporzione di una risorsa sul totale. Hover per valore esatto e %. Legenda in basso con iniziale = nome.</li>
+                </ul>
+              </div>
+            </div>
+            <div style="border:1px solid var(--border);border-radius:6px;overflow:hidden;">
+              <div style="background:#0891B2;color:#fff;padding:.3rem .7rem;font-weight:700;font-size:.78rem;">📊 Confronto</div>
+              <div style="padding:.45rem .7rem;color:var(--g700);line-height:1.6;">
+                <span data-tip="Ogni metrica è un blocco con barre orizzontali colorate per gruppo. La larghezza è proporzionale al massimo tra le risorse attive.">Barre orizzontali per 9 metriche (una scheda per metrica). Per ogni metrica: una riga per risorsa, con nome colorato + barra proporzionale + valore numerico. Ideale per identificare in un colpo d'occhio chi performa meglio su ogni KPI. I colori seguono il gruppo di appartenenza.</span>
+              </div>
+            </div>
+            <div style="border:1px solid var(--border);border-radius:6px;overflow:hidden;">
+              <div style="background:#CA8A04;color:#fff;padding:.3rem .7rem;font-weight:700;font-size:.78rem;">📅 Timeline</div>
+              <div style="padding:.45rem .7rem;color:var(--g700);line-height:1.6;">
+                <span data-tip="La data di riferimento è la Data Mail (colonna J). Il totale mensile appare nel badge blu accanto al nome del mese.">Vista calendario heat-map. Per ogni risorsa e ogni mese: celle giornaliere il cui colore va dal bianco (0 SdF) al pieno saturo (massimo SdF in quel giorno). Il badge accanto al nome del mese mostra il totale SdF del mese. Hover su ogni giorno per vedere i SdF lavorati. La data di riferimento è la <strong>Data Mail</strong>.</span>
+              </div>
+            </div>
+            <div style="border:1px solid var(--border);border-radius:6px;overflow:hidden;">
+              <div style="background:#374151;color:#fff;padding:.3rem .7rem;font-weight:700;font-size:.78rem;">📋 Dettaglio SdF</div>
+              <div style="padding:.45rem .7rem;color:var(--g700);line-height:1.6;">
+                <span data-tip="Clicca l'intestazione di colonna per ordinare. Hover sull'intestazione per la descrizione. Il contatore in alto mostra quanti record sono visibili.">Tabella completa con tutti i SdF filtrati. Ogni riga = un SdF. Funzionalità: ricerca full-text (SdF · cliente · comune) · filtri per lavorante, gruppo, tipo, esito, priorità · ordinamento per ogni colonna (clic intestazione) · evidenziazione colori (esito verde/rosso, urgente rosso, in tempo verde/rosso). In fondo: pulsante <strong>📤 Esporta Excel</strong> che genera 5 fogli formattati.</span>
+              </div>
+            </div>
+            <div style="border:1px solid var(--border);border-radius:6px;overflow:hidden;">
+              <div style="background:#2D8B57;color:#fff;padding:.3rem .7rem;font-weight:700;font-size:.78rem;">👥 Gruppi</div>
+              <div style="padding:.45rem .7rem;color:var(--g700);line-height:1.6;">
+                Tre blocchi per confrontare Sirti, Huawei e TIM:
+                <ul style="margin:.3rem 0 0;padding-left:1.2rem;">
+                  <li data-tip="Hover su ogni cella per la formula dettagliata e il valore del gruppo."><strong>Card KPI di gruppo</strong> — stessa struttura 9-celle di Per Persona ma aggregata per azienda. Mostra i membri del gruppo nell'header.</li>
+                  <li style="margin-top:.25rem;" data-tip="Toggle 📊 Barre / 🥧 Distribuzione per cambiare la vista."><strong>Grafico confronto</strong> — toggle 📊 Barre (7 metriche, una barra per gruppo) o 🥧 Distribuzione (4 torte, una fetta per gruppo). Hover per valori dettagliati.</li>
+                  <li style="margin-top:.25rem;" data-tip="9 metriche con barre orizzontali colorate per gruppo, identico al Confronto individuale."><strong>Barre dettaglio</strong> — 9 metriche in stile Confronto: una riga per gruppo con barra proporzionale e valore numerico.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ❸ KPI SPIEGAZIONE -->
+        <div class="card">
+          <div class="card-hdr"><span class="card-hdr-title">📊 I 9 KPI — guida completa</span></div>
+          <div style="padding:.5rem 1rem;font-size:.8rem;">
+            <table style="width:100%;border-collapse:collapse;">
+              <thead><tr style="background:var(--g50);">
+                <th style="padding:.3rem .5rem;text-align:left;font-size:.74rem;color:var(--g600);border-bottom:2px solid #0066CC;width:15%;">KPI</th>
+                <th style="padding:.3rem .5rem;text-align:left;font-size:.74rem;color:var(--g600);border-bottom:2px solid #0066CC;width:22%;">Formula</th>
+                <th style="padding:.3rem .5rem;text-align:left;font-size:.74rem;color:var(--g600);border-bottom:2px solid #0066CC;">Come interpretarlo</th>
+                <th style="padding:.3rem .5rem;text-align:left;font-size:.74rem;color:var(--g600);border-bottom:2px solid #0066CC;width:12%;">Cosa vuoi</th>
+                <th style="padding:.3rem .5rem;text-align:center;font-size:.74rem;color:var(--g600);border-bottom:2px solid #0066CC;width:8%;">Target</th>
+              </tr></thead>
+              <tbody>
+                <tr data-tip="Conta tutti i SdF assegnati nel periodo, indipendentemente dall'esito. È l'indicatore del carico di lavoro ricevuto.">
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-weight:700;color:#0066CC;">SdF Totali</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-size:.73rem;color:var(--g500);font-family:monospace;">COUNT(record)</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);">Volume di lavoro ricevuto. Confronta tra risorse per vedere chi gestisce più SdF.</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-size:.74rem;">Volume alto</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);text-align:center;">—</td>
+                </tr>
+                <tr style="background:var(--g50);" data-tip="SdF con esito CHIUSO: il lavorante ha inviato la risposta al cliente o all'operatore. Non include gli annullati.">
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-weight:700;color:#15803d;">Chiusi</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-size:.73rem;color:var(--g500);font-family:monospace;">COUNT(esito=CHIUSO)</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);">Produttività effettiva. Quanti SdF hanno ottenuto risposta nel periodo.</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-size:.74rem;">Il più alto possibile</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);text-align:center;">—</td>
+                </tr>
+                <tr data-tip="Chiusi diviso Totali × 100. Sotto 80% segnala arretrato in crescita. Sotto 60% = situazione critica.">
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-weight:700;color:#15803d;">% Chiusi</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-size:.73rem;color:var(--g500);font-family:monospace;">Chiusi÷Totali×100</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);">Tasso di completamento. &lt;80% = arretrato in crescita · &lt;60% = situazione critica.</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-size:.74rem;">Più alto possibile</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);text-align:center;color:#15803d;font-weight:800;">&gt;80%</td>
+                </tr>
+                <tr style="background:var(--g50);" data-tip="SdF annullati (stornati) prima della chiusura. Un numero elevato rispetto ai totali può segnalare problemi di qualità o richieste errate del cliente.">
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-weight:700;color:#E60028;">Annullati</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-size:.73rem;color:var(--g500);font-family:monospace;">COUNT(esito~ANNULL)</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);">SdF stornati prima della risposta. Idealmente basso. Rapporto Annullati/Totali segnala qualità delle richieste.</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-size:.74rem;">Più basso possibile</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);text-align:center;">↓ min</td>
+                </tr>
+                <tr data-tip="Fattibilità per clienti finali diretti (privati, aziende). Collegamento diretto senza operatori intermedi. Generalmente più semplici dei Wholesale.">
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-weight:700;">Retail</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-size:.73rem;color:var(--g500);font-family:monospace;">COUNT(tipo=RETAIL)</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);">Fattibilità per clienti finali (privati/aziende). Confronta con Wholesale per mix di portafoglio.</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-size:.74rem;">Proporzionale al mix</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);text-align:center;">—</td>
+                </tr>
+                <tr style="background:var(--g50);" data-tip="Fattibilità per operatori TLC tramite interfacce NNI (Network-to-Network) o IRP (Interconnection Reference Point). Tendenzialmente più complessi tecnicamnete.">
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-weight:700;">Wholesale</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-size:.73rem;color:var(--g500);font-family:monospace;">COUNT(tipo=WHOLESALE)</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);">Fattibilità per operatori TLC (NNI/IRP). Più complessi tecnicamente, richiedono coordinamento inter-operatore.</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-size:.74rem;">Proporzionale al mix</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);text-align:center;">—</td>
+                </tr>
+                <tr data-tip="SdF marcati URGENTE: hanno una deadline ridotta rispetto agli Standard. La gestione degli urgenti incide sulla % In Tempo.">
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-weight:700;color:#E60028;">Urgenti</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-size:.73rem;color:var(--g500);font-family:monospace;">COUNT(prior.=URGENTE)</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);">Priorità massima, timeline ridotta. Un alto numero di urgenti può abbassare la % In Tempo se non gestiti correttamente.</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-size:.74rem;">Proporzionale al carico</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);text-align:center;">—</td>
+                </tr>
+                <tr style="background:var(--g50);" data-tip="Media dei giorni tra Data Mail e Data Esito. In modalità Lavorativi esclude sabati, domeniche e tutti i festivi italiani (inclusa Pasqua calcolata dinamicamente).">
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-weight:700;color:#B45309;">Tempo Medio</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-size:.73rem;color:var(--g500);font-family:monospace;">MEDIA(Esito−Mail)</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);">Velocità di risposta. Toggle ☀/💼 per solare/lavorativo. Confronta tra risorse: chi risponde più velocemente? Chi è più lento in certi mesi?</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-size:.74rem;">Più basso possibile</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);text-align:center;">↓ min</td>
+                </tr>
+                <tr data-tip="Il KPI più critico: misura quanti SdF vengono chiusi ENTRO la data di scadenza indicata dal cliente. Un valore basso impatta sulla soddisfazione del cliente TIM.">
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-weight:700;color:#15803d;">% In Tempo</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-size:.73rem;color:var(--g500);font-family:monospace;">InTempo÷TotScad×100</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);"><strong>KPI critico</strong>. Misura il rispetto delle scadenze. &lt;90% = problema da investigare · &lt;70% = criticità grave. Solo i SdF con scadenza valorizzata entrano nel calcolo.</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-size:.74rem;">Più alto possibile</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);text-align:center;color:#15803d;font-weight:800;">&gt;90%</td>
+                </tr>
+                <tr style="background:var(--g50);" data-tip="Somma degli interventi tecnici: Dim. = variazioni apparati/circuiti DWDM, Infra. = lavori fisici (DROP, posa cavi). Più interventi = SdF più complesso.">
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-weight:700;">Int. tot.</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-size:.73rem;color:var(--g500);font-family:monospace;">Σ(dim)+Σ(infra)</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);">Complessità tecnica del portfolio. Dim. = variazioni DWDM · Infra. = fisica DROP/posa. Chi gestisce molti interventi lavora su SdF più complessi.</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);font-size:.74rem;">Indicativo</td>
+                  <td style="padding:.32rem .5rem;border-bottom:1px solid var(--border);text-align:center;">—</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ❹ MODALITÀ GIORNI -->
+        <div class="card">
+          <div class="card-hdr"><span class="card-hdr-title">☀ Modalità giorni: Solari vs Lavorativi</span></div>
+          <div style="padding:.5rem 1rem;font-size:.8rem;color:var(--g700);line-height:1.65;">
+            <p style="margin:0 0 .4rem;">Il toggle nella sezione "📅 Periodo di analisi" cambia il modo in cui viene calcolato il <strong>Tempo Medio</strong>:</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.5rem;">
+              <div style="background:#FEF9C3;border:1px solid #CA8A04;border-radius:6px;padding:.4rem .6rem;" data-tip="Include sabati, domeniche e festivi nel conteggio. Utile per vedere il tempo totale trascorso dalla ricezione alla risposta.">
+                <div style="font-weight:700;color:#92400E;">☀ Giorni Solari</div>
+                <div style="font-size:.75rem;margin-top:.2rem;color:var(--g700);">Conta tutti i giorni di calendario tra Data Mail e Data Esito. Include sabati, domeniche e festivi. Utile per vedere il tempo totale assoluto.</div>
+              </div>
+              <div style="background:#D1FAE5;border:1px solid #15803d;border-radius:6px;padding:.4rem .6rem;" data-tip="Esclude sabati, domeniche, e tutti i festivi italiani fissi più Pasqua e Pasquetta calcolate dinamicamente per ogni anno.">
+                <div style="font-weight:700;color:#14532d;">💼 Giorni Lavorativi</div>
+                <div style="font-size:.75rem;margin-top:.2rem;color:var(--g700);">Conta solo i giorni lavorativi (lun–ven). Esclude sabati, domeniche, e i festivi italiani: Capodanno, Epifania, Pasqua+Lunedì, 25 Apr, 1 Mag, 2 Giu, Ferragosto, Ognissanti, Immacolata, Natale, S.Stefano.</div>
+              </div>
+            </div>
+            <p style="margin:0;font-size:.75rem;color:var(--g500);">💡 La modalità Lavorativi è più precisa per valutare l'efficienza reale: se un SdF arriva venerdì e viene risposto il lunedì successivo, i giorni solari sono 3 ma i lavorativi sono solo 1.</p>
+          </div>
+        </div>
+
+        <!-- ❺ LEGENDA ABBREVIAZIONI -->
+        <div class="card">
+          <div class="card-hdr"><span class="card-hdr-title">📖 Legenda completa abbreviazioni</span></div>
+          <div style="padding:.5rem 1rem;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem .8rem;margin-bottom:.5rem;">
+              <div style="font-size:.72rem;font-weight:700;color:var(--g600);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border);padding-bottom:.2rem;">Abbreviazione</div>
+              <div style="font-size:.72rem;font-weight:700;color:var(--g600);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border);padding-bottom:.2rem;">Significato esteso + contesto</div>
+            </div>
+            <div class="leg-grid" style="grid-template-columns:1fr 1fr;">
+              <div class="leg-r" data-tip="Sirti S.p.A. = azienda italiana di telecomunicazioni, fornitrice di TIM per le fattibilità ottiche. Chip BLU nell'interfaccia."><span class="leg-k">Sirti (S)</span><span class="leg-v">Sirti S.p.A. — chip 🔵 Blu — fornitore TIM</span></div>
+              <div class="leg-r" data-tip="Huawei Technologies = azienda cinese di TLC, fornitrice di TIM per le fattibilità ottiche. Chip ROSSO nell'interfaccia."><span class="leg-k">Huawei (H)</span><span class="leg-v">Huawei Technologies — chip 🔴 Rosso — fornitore TIM</span></div>
+              <div class="leg-r" data-tip="TIM Telecom Italia = cliente committente. Angotti lavora direttamente per TIM, non per uno dei fornitori. Chip VERDE nell'interfaccia."><span class="leg-k">TIM (T)</span><span class="leg-v">Telecom Italia — chip 🟢 Verde — committente diretto</span></div>
+              <div class="leg-r" data-tip="SdF = Studio di Fattibilità. Documento tecnico che valuta la possibilità di realizzare un collegamento in fibra ottica per un cliente TIM."><span class="leg-k">SdF</span><span class="leg-v">Studio di Fattibilità — documento tecnico TIM</span></div>
+              <div class="leg-r" data-tip="RETAIL = fattibilità per clienti finali diretti: privati, aziende, PA. Collegamento dedicato senza operatori intermedi."><span class="leg-k">RETAIL (R)</span><span class="leg-v">Clienti finali diretti (privati, aziende, PA)</span></div>
+              <div class="leg-r" data-tip="WHOLESALE = fattibilità per operatori TLC alternativi tramite NNI (Network-to-Network Interface) o IRP (Interconnection Reference Point)."><span class="leg-k">WHOLESALE (W)</span><span class="leg-v">Operatori TLC tramite NNI o IRP</span></div>
+              <div class="leg-r" data-tip="NNI = Network-to-Network Interface. Interfaccia tecnica standardizzata tra reti di operatori diversi, usata nei servizi WHOLESALE."><span class="leg-k">NNI</span><span class="leg-v">Network-to-Network Interface (WHOLESALE)</span></div>
+              <div class="leg-r" data-tip="IRP = Interconnection Reference Point. Punto di riferimento per l'interconnessione tra reti di operatori, alternativo all'NNI."><span class="leg-k">IRP</span><span class="leg-v">Interconnection Reference Point (WHOLESALE)</span></div>
+              <div class="leg-r" data-tip="URGENTE = priorità massima. La timeline di risposta è ridotta rispetto agli Standard. Impatta sulla % In Tempo se non gestita."><span class="leg-k">URGENTE (URG)</span><span class="leg-v">Priorità massima — timeline ridotta</span></div>
+              <div class="leg-r" data-tip="STANDARD = priorità normale. La timeline di risposta segue le SLA standard di TIM."><span class="leg-k">STANDARD (STD)</span><span class="leg-v">Priorità normale — timeline SLA standard</span></div>
+              <div class="leg-r" data-tip="CHIUSO = SdF completato. Il lavorante ha inviato la risposta al cliente o all'operatore (positiva o negativa). Conta nei KPI di produttività."><span class="leg-k">CHIUSO</span><span class="leg-v">SdF con risposta inviata al cliente</span></div>
+              <div class="leg-r" data-tip="ANNULLATO = SdF stornato prima della chiusura. Il cliente o TIM ha ritirato la richiesta. NON conta nel tempo medio né nella % In Tempo."><span class="leg-k">ANNULLATO</span><span class="leg-v">SdF ritirato/stornato — escluso dai KPI tempo</span></div>
+              <div class="leg-r" data-tip="Data Mail = data di invio mail SdF al lavorante. È l'avvio ufficiale della lavorazione. Usata come riferimento per il mese e per il calcolo del tempo."><span class="leg-k">Mail (col. J)</span><span class="leg-v">Data invio mail = avvio lavorazione (rif. mese)</span></div>
+              <div class="leg-r" data-tip="Data Esito = data di chiusura/risposta SdF. Fine del conteggio giorni. Usata per calcolare il tempo medio e la % In Tempo."><span class="leg-k">Esito (col. K)</span><span class="leg-v">Data risposta/chiusura = fine lavorazione</span></div>
+              <div class="leg-r" data-tip="Scadenza = deadline richiesta dal cliente. Se Data Esito <= Scadenza allora il SdF è In Tempo (✔). Usata per calcolare la % In Tempo."><span class="leg-k">Scadenza (col. C)</span><span class="leg-v">Deadline cliente — base per % In Tempo</span></div>
+              <div class="leg-r" data-tip="✔ = SdF chiuso ENTRO la data di scadenza. ✖ = SdF chiuso DOPO la scadenza. — = scadenza non disponibile (non entra nel calcolo % In Tempo)."><span class="leg-k">T. ✔ / ✖</span><span class="leg-v">In Tempo (✔) / Fuori scadenza (✖)</span></div>
+              <div class="leg-r" data-tip="Int. Dimensionali = richieste di variazione su apparati o circuiti DWDM (Dense Wavelength Division Multiplexing). Indicano la complessità tecnica degli apparati."><span class="leg-k">Dim. / D.</span><span class="leg-v">Interventi Dimensionali — variazioni DWDM</span></div>
+              <div class="leg-r" data-tip="Int. Infrastrutturali = lavori su infrastruttura fisica: posa cavi, DROP, cunicoli, armadi. Indicano interventi sul campo."><span class="leg-k">Infra. / I.</span><span class="leg-v">Interventi Infrastrutturali — fisica DROP/posa</span></div>
+              <div class="leg-r" data-tip="DWDM = Dense Wavelength Division Multiplexing. Tecnologia per trasmissione dati su fibra ottica usando lunghezze d'onda multiple. Standard per reti ottiche ad alta capacità."><span class="leg-k">DWDM</span><span class="leg-v">Dense Wavelength Division Multiplexing</span></div>
+              <div class="leg-r" data-tip="DROP = tratto finale di fibra ottica che collega la centrale o il ripartitore all'edificio del cliente. Spesso richiede lavori civili."><span class="leg-k">DROP</span><span class="leg-v">Tratto finale fibra ottica (cliente)</span></div>
+              <div class="leg-r" data-tip="Gg = giorni di lavorazione = Data Esito - Data Mail. Il tooltip mostra il valore in modalità solare e lavorativa."><span class="leg-k">Gg</span><span class="leg-v">Giorni lavorazione (Mail → Esito)</span></div>
+              <div class="leg-r" data-tip="Tempo Med. = media dei giorni di lavorazione di tutti i SdF CHIUSI nel periodo. Non include gli annullati."><span class="leg-k">Tempo Med.</span><span class="leg-v">Media giorni lavorazione (solo CHIUSI)</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ❻ CONSIGLI -->
+        <div class="card" style="border-left:4px solid #CA8A04;">
+          <div class="card-hdr"><span class="card-hdr-title">💡 Consigli di analisi avanzata</span></div>
+          <div style="padding:.5rem 1rem;font-size:.8rem;color:var(--g700);line-height:1.65;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem .9rem;">
+              <div style="border:1px solid var(--border);border-radius:6px;padding:.4rem .6rem;" data-tip="Confronto affianca tutte le risorse su ogni metrica — ideale per vedere in un colpo d'occhio chi eccelle e chi ha margine di miglioramento.">
+                <div style="font-weight:700;margin-bottom:.15rem;">🔍 Confronto rapido</div>
+                <div style="font-size:.75rem;">Vai in 📊 Confronto per vedere in un colpo d'occhio tutte le risorse su ogni KPI. La barra più lunga = valore più alto. Ideale per identificare il migliore e chi ha margine di crescita.</div>
+              </div>
+              <div style="border:1px solid var(--border);border-radius:6px;padding:.4rem .6rem;" data-tip="Le card gruppo aggregano tutti i membri attivi per confronto inter-azienda Sirti vs Huawei vs TIM.">
+                <div style="font-weight:700;margin-bottom:.15rem;">🏢 Analisi inter-gruppo</div>
+                <div style="font-size:.75rem;">Il tab 👥 Gruppi aggrega Sirti vs Huawei vs TIM — utile per valutare la performance complessiva delle aziende fornitrici e identificare differenze strutturali.</div>
+              </div>
+              <div style="border:1px solid var(--border);border-radius:6px;padding:.4rem .6rem;" data-tip="Filtra per un singolo mese e confronta mesi diversi per identificare picchi o cali di produttività.">
+                <div style="font-weight:700;margin-bottom:.15rem;">📅 Analisi mensile</div>
+                <div style="font-size:.75rem;">Filtra per mese singolo e osserva la Timeline: i giorni più scuri = picchi di produzione. Confronta mesi diversi per vedere stagionalità o periodi critici.</div>
+              </div>
+              <div style="border:1px solid var(--border);border-radius:6px;padding:.4rem .6rem;" data-tip="La % In Tempo è il KPI più critico per la qualità del servizio. Bassa % con alto volume = problema di qualità, non di quantità.">
+                <div style="font-weight:700;margin-bottom:.15rem;">⚠️ KPI critico: % In Tempo</div>
+                <div style="font-size:.75rem;">Una risorsa con alto volume ma bassa % In Tempo ha un problema di qualità (rispetta poco le scadenze). Target &gt;90%. Sotto 70% è una criticità grave da investigare.</div>
+              </div>
+              <div style="border:1px solid var(--border);border-radius:6px;padding:.4rem .6rem;" data-tip="I giorni lavorativi escludono weekend e festivi, rendendo il confronto tra risorse più equo (es. un SdF ricevuto venerdì e risposto il lunedì ha 1 giorno lavorativo, non 3 solari).">
+                <div style="font-weight:700;margin-bottom:.15rem;">💼 Usa i Giorni Lavorativi</div>
+                <div style="font-size:.75rem;">Attiva 💼 Lavorativi per confrontare tempi reali: esclude weekend e festivi. Più corretto per valutare l'efficienza della risorsa, indipendentemente da quando è arrivato il SdF.</div>
+              </div>
+              <div style="border:1px solid var(--border);border-radius:6px;padding:.4rem .6rem;" data-tip="Disattiva le risorse non rilevanti per l'analisi che stai facendo: se vuoi confrontare solo Sirti, disattiva le risorse Huawei e TIM.">
+                <div style="font-weight:700;margin-bottom:.15rem;">🎯 Focus su un gruppo</div>
+                <div style="font-size:.75rem;">Disattiva le risorse irrilevanti con un clic sul chip: se vuoi analizzare solo Sirti, disattiva Huawei e TIM. I KPI si ricalcolano istantaneamente. Usa + Aggiungi per risorse temporanee.</div>
+              </div>
+              <div style="border:1px solid var(--border);border-radius:6px;padding:.4rem .6rem;" data-tip="L'Export Excel genera 5 fogli formattati: Dashboard KPI, Grafici Barre, Dettaglio SdF, KPI Individuale, Legenda.">
+                <div style="font-weight:700;margin-bottom:.15rem;">📤 Export per report</div>
+                <div style="font-size:.75rem;">Il pulsante 📤 Esporta Excel in fondo genera un report con 5 fogli formattati e colorati, pronto per la condivisione con management. I filtri attivi vengono applicati anche all'export.</div>
+              </div>
+              <div style="border:1px solid var(--border);border-radius:6px;padding:.4rem .6rem;" data-tip="Hover su grafici, intestazioni colonna, label e card per vedere tooltip contestuali con formula e spiegazione.">
+                <div style="font-weight:700;margin-bottom:.15rem;">🖱️ Hover ovunque</div>
+                <div style="font-size:.75rem;">Passa il mouse su qualsiasi elemento: barre del grafico, fette della torta, celle KPI, intestazioni tabella, bottoni. Ogni elemento ha un tooltip con formula, spiegazione e contesto.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ❼ STRUTTURA FILE -->
+        <div class="card" style="border-left:4px solid #6b7280;">
+          <div class="card-hdr"><span class="card-hdr-title">📁 Struttura file Excel attesa</span></div>
+          <div style="padding:.5rem 1rem;font-size:.8rem;color:var(--g700);">
+            <p style="margin:0 0 .4rem;">Il tool legge file <code style="background:var(--g50);padding:.05rem .3rem;border-radius:3px;">.xlsx</code> o <code style="background:var(--g50);padding:.05rem .3rem;border-radius:3px;">.xls</code> con questa struttura obbligatoria:</p>
+            <table style="width:100%;border-collapse:collapse;margin-bottom:.5rem;font-size:.76rem;">
+              <thead><tr style="background:#374151;color:#fff;">
+                <th style="padding:.3rem .5rem;text-align:left;">Foglio</th>
+                <th style="padding:.3rem .5rem;text-align:left;">Anni</th>
+                <th style="padding:.3rem .5rem;text-align:left;">Dati iniziano da</th>
+                <th style="padding:.3rem .5rem;text-align:left;">Note</th>
+              </tr></thead>
+              <tbody>
+                <tr><td style="padding:.25rem .5rem;border:1px solid var(--border);" data-tip="Il nome deve contenere '2025' per essere riconosciuto."><strong>SDF Centro 2025</strong></td><td style="padding:.25rem .5rem;border:1px solid var(--border);">2025</td><td style="padding:.25rem .5rem;border:1px solid var(--border);">Riga 4 (header riga 3)</td><td style="padding:.25rem .5rem;border:1px solid var(--border);">Il nome foglio deve contenere "2025"</td></tr>
+                <tr style="background:var(--g50);"><td style="padding:.25rem .5rem;border:1px solid var(--border);" data-tip="Il nome deve contenere '2026' per essere riconosciuto."><strong>SDF Centro+SUD 2026</strong></td><td style="padding:.25rem .5rem;border:1px solid var(--border);">2026</td><td style="padding:.25rem .5rem;border:1px solid var(--border);">Riga 4 (header riga 3)</td><td style="padding:.25rem .5rem;border:1px solid var(--border);">Il nome foglio deve contenere "2026"</td></tr>
+                <tr><td style="padding:.25rem .5rem;border:1px solid var(--border);color:var(--g400);">SDF aperti, Foglio1, altri</td><td style="padding:.25rem .5rem;border:1px solid var(--border);color:var(--g400);">—</td><td style="padding:.25rem .5rem;border:1px solid var(--border);color:var(--g400);">Ignorati</td><td style="padding:.25rem .5rem;border:1px solid var(--border);color:var(--g400);">Non vengono letti</td></tr>
+              </tbody>
+            </table>
+            <p style="margin:.4rem 0 .3rem;font-weight:700;">Colonne obbligatorie (su ogni foglio 2025/2026):</p>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.2rem .5rem;font-size:.73rem;">
+              <div style="background:#FEE2E2;border-radius:4px;padding:.2rem .4rem;" data-tip="Colonna G: Cognome del lavorante (es. LUPOLI, FEROCI). Il matching è parziale: GENTILE viene trovato anche come 'Gentile Maria'."><strong style="color:#E60028;">G — Lavorante ⭐</strong><br><span style="color:var(--g600);">Cognome (matching parziale)</span></div>
+              <div style="background:#FEE2E2;border-radius:4px;padding:.2rem .4rem;" data-tip="Colonna J: Data invio mail SdF. Formato accettato: data Excel, YYYY-MM-DD, DD/MM/YYYY, testo italiano (15 gennaio 2026)."><strong style="color:#E60028;">J — Data Mail ⭐</strong><br><span style="color:var(--g600);">Data avvio (rif. mese)</span></div>
+              <div style="background:var(--g50);border-radius:4px;padding:.2rem .4rem;" data-tip="Colonna A: N. pratica SdF (es. SF2600957337/0). Usato come ID univoco nella tabella dettaglio."><strong>A — N. Pratica</strong><br><span style="color:var(--g600);">ID univoco SdF</span></div>
+              <div style="background:var(--g50);border-radius:4px;padding:.2rem .4rem;" data-tip="Colonna B: RETAIL o WHOLESALE. Determina il tipo di fattibilità."><strong>B — Tipo</strong><br><span style="color:var(--g600);">RETAIL / WHOLESALE</span></div>
+              <div style="background:var(--g50);border-radius:4px;padding:.2rem .4rem;" data-tip="Colonna C: Data di scadenza indicata dal cliente. Usata per calcolare la % In Tempo (✔/✖)."><strong>C — Scadenza</strong><br><span style="color:var(--g600);">Deadline cliente</span></div>
+              <div style="background:var(--g50);border-radius:4px;padding:.2rem .4rem;" data-tip="Colonne D-E: Provincia e Comune del cliente o dell'impianto."><strong>D/E — Prov/Comune</strong><br><span style="color:var(--g600);">Localizzazione</span></div>
+              <div style="background:var(--g50);border-radius:4px;padding:.2rem .4rem;" data-tip="Colonna F: Ragione sociale del cliente o dell'operatore."><strong>F — Cliente</strong><br><span style="color:var(--g600);">Ragione sociale</span></div>
+              <div style="background:var(--g50);border-radius:4px;padding:.2rem .4rem;" data-tip="Colonna H: Territorio geografico (Centro, Sud, Nord, ecc.)."><strong>H — Territorio</strong><br><span style="color:var(--g600);">Area geografica</span></div>
+              <div style="background:var(--g50);border-radius:4px;padding:.2rem .4rem;" data-tip="Colonna I: Esito lavorazione. CHIUSO = completato, ANNULLATO = stornato."><strong>I — Esito</strong><br><span style="color:var(--g600);">CHIUSO / ANNULLATO</span></div>
+              <div style="background:var(--g50);border-radius:4px;padding:.2rem .4rem;" data-tip="Colonna K: Data chiusura SdF. Usata per calcolare il tempo di lavorazione e la % In Tempo."><strong>K — Data Esito</strong><br><span style="color:var(--g600);">Data chiusura</span></div>
+              <div style="background:var(--g50);border-radius:4px;padding:.2rem .4rem;" data-tip="Colonna L: Numero interventi dimensionali (variazioni apparati DWDM)."><strong>L — Int. Dim.</strong><br><span style="color:var(--g600);">Variazioni DWDM</span></div>
+              <div style="background:var(--g50);border-radius:4px;padding:.2rem .4rem;" data-tip="Colonna M: Numero interventi infrastrutturali (lavori fisici DROP/posa cavi)."><strong>M — Int. Infra.</strong><br><span style="color:var(--g600);">Lavori fisici</span></div>
+              <div style="background:var(--g50);border-radius:4px;padding:.2rem .4rem;" data-tip="Colonna Q: Priorità SdF. URGENTE = timeline ridotta, STANDARD = normale."><strong>Q — Priorità</strong><br><span style="color:var(--g600);">URGENTE / STANDARD</span></div>
+            </div>
+            <p style="margin:.45rem 0 0;font-size:.73rem;color:var(--g500);">⭐ Colonne critiche. · Formati data accettati: data nativa Excel · <code>YYYY-MM-DD</code> · <code>DD/MM/YYYY</code> · seriale numerico Excel · testo italiano (<em>"15 gennaio 2026"</em>, <em>"09 febbraio 2026"</em>).</p>
+          </div>
+        </div>
+
+      
+        <div style="text-align:center;padding:.5rem;font-size:.7rem;color:var(--g400);">KPI Monitor — Sirti @ TIM &nbsp;·&nbsp; Sviluppato da <strong style="color:var(--g600);">Lupoli Giuseppe</strong></div></div>
+    </div>
+
   </div>
 </div>
 
+<div id="monthMovo" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:flex-start;justify-content:center;padding:.8rem;overflow-y:auto;"><div id="monthModalBox" style="background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.3);width:95vw;max-width:1200px;padding:.9rem 1.1rem;"><div id="monthModalContent"></div></div></div>
 <!-- MODAL -->
 <div class="movo" id="movo">
   <div class="modal">
@@ -621,7 +928,7 @@ tbody tr:nth-child(even){background:rgba(0,0,0,.01);}
   </div>
 </div>
 
-<div class="footer">KPI Monitor &nbsp;|&nbsp; Sirti @ TIM — Gestione Commessa &nbsp;|&nbsp; <strong>Sirti:</strong> Lupoli, Feroci &nbsp;|&nbsp; <strong>Huawei:</strong> Cecchetto, Gentile, Imperatori, Tenuta &nbsp;|&nbsp; <strong>TIM:</strong> Angotti</div>
+<div class="footer">KPI Monitor &nbsp;|&nbsp; Sirti @ TIM — Gestione Commessa &nbsp;|&nbsp; <strong>Sirti:</strong> Lupoli, Feroci &nbsp;|&nbsp; <strong>Huawei:</strong> Cecchetto, Gentile, Imperatori, Tenuta &nbsp;|&nbsp; <strong>TIM:</strong> Angotti &nbsp;|&nbsp; Sviluppato da <strong>Lupoli Giuseppe</strong></div>
 
 <script>
 // ═══ TOOLTIP JS (evita clipping da overflow) ═══
@@ -876,7 +1183,7 @@ function S(recs){
 // ═══ RENDER ═══
 function render(){
   var data=getFil();
-  renderKpi(data);renderPanels(data);renderBars(data);renderTL(data);renderTable();
+  renderKpi(data);renderGroupKpis(data);renderPanels(data);renderBars(data);renderTL(data);renderTable();
   if(document.getElementById('sec-grafici').classList.contains('on'))renderCharts();
   document.getElementById('tbLive').textContent=data.length+' SdF nel periodo';
   buildTLav();
@@ -1021,7 +1328,11 @@ function renderTL(data){
       'margin-left:8px;padding:.1rem .55rem;border-radius:20px;'+
       'background:rgba(0,102,204,.1);border:1px solid rgba(0,102,204,.25);'+
       'font-size:.7rem;font-weight:700;color:#0066CC;min-width:28px;'+
-      '" data-tip="Totale SdF nel mese di '+MN[mo]+' '+y+'">'+monthTotal+'</span>';
+      '" data-tip="Totale SdF nel mese di '+MN[mo]+' '+y+'">'+monthTotal+'</span>'+
+      '<button class="tl-detail-btn" data-ym="'+ym+'" '+
+      'style="margin-left:6px;background:none;border:1px solid #d1d5db;border-radius:12px;'+
+      'padding:.05rem .45rem;font-size:.65rem;cursor:pointer;color:#6b7280;" '+
+      'data-tip="Dettaglio mese '+MN[mo]+' '+y+'">&#128202; Dettaglio</button>';
     return '<div style="margin-bottom:.15rem;">'+
       '<div class="tlmh" style="display:flex;align-items:center;gap:.3rem;">'+
         MN[mo]+' '+y+totalBadge+
@@ -1166,13 +1477,9 @@ function buildBarChart(ap, sm) {
         ' rx="3" fill="'+fill+'" stroke="'+stroke+'" stroke-width="0.5"'+
         ' data-tip="'+p.name+'&#10;'+m.l+': '+val+'&#10;'+m.tip+'"/>';
       // Valore sopra barra
-      if(bH > 16){
-        svg += '<text x="'+(parseFloat(bx)+bW/2).toFixed(1)+'" y="'+(parseFloat(by)-4)+'"'+
-          ' text-anchor="middle" font-size="8.5" fill="'+stroke+'" font-weight="700">'+val+'</text>';
-      } else if(val > 0){
-        svg += '<text x="'+(parseFloat(bx)+bW/2).toFixed(1)+'" y="'+(parseFloat(by)-3)+'"'+
-          ' text-anchor="middle" font-size="8" fill="'+stroke+'" font-weight="700">'+val+'</text>';
-      }
+      // Valore sopra barra - sempre visibile, anche 0
+      svg += '<text x="'+(parseFloat(bx)+bW/2).toFixed(1)+'" y="'+(bH>14?(parseFloat(by)-4):(parseFloat(by)-7))+'"'
+        +' text-anchor="middle" font-size="8.5" fill="'+(bH>14?stroke:'#374151')+'" font-weight="700">'+val+'</text>';
     });
   });
 
@@ -1252,7 +1559,7 @@ function buildPieCharts(ap, sm) {
       var naturalArc = tot>0?(v.v/tot)*TWO_PI:0;
       var arc = v.v===0 ? 0 : (naturalArc < MIN_ARC ? MIN_ARC : (bigTot>0?(v.v/bigTot)*remainArc:naturalArc));
       return {name:v.name,init:v.init,fill:v.fill,stroke:v.stroke,v:v.v,arc:arc,
-              pct:tot>0?Math.round(v.v/tot*100):0};
+              pct:tot>0?Math.round(v.v/tot*1000)/10:0};
     });
 
     var out='', ang=-Math.PI/2, labels=[];
@@ -1438,11 +1745,403 @@ function toggleKpiMode(btn){
   btn.style.color=KPI_MODE==='lavorativo'?'var(--blue)':'';
   render();
 }
+
+// ═══ KPI DI GRUPPO ═══
+function renderGroupKpis(data){
+  ['groupKpiWrap','groupKpiWrap2'].forEach(function(wid){
+    var wrap=document.getElementById(wid);
+    if(!wrap)return;
+    var grpDef=[
+      {id:'sirti',  label:'🔵 Sirti',  color:'#0066CC',border:'#004C99'},
+      {id:'huawei', label:'🔴 Huawei', color:'#E60028',border:'#9B0F20'},
+      {id:'altro',  label:'🟢 TIM',    color:'#2D8B57',border:'#1A5C38'},
+    ];
+    var html2='';
+    grpDef.forEach(function(g){
+      var members=PEOPLE.filter(function(p){return p.gruppo===g.id&&ACTIVE.has(p.name);});
+      if(!members.length)return;
+      var recs=data.filter(function(r){return members.some(function(p){return p.name===r.lavorante;});});
+      var s=S(recs);
+      var cells=[
+        {v:s.n,       l:'SdF tot.',  tip:'TOTALE SdF — '+g.label+'\n\nNumero di SdF ricevuti e gestiti\nnel periodo selezionato.\nInclude tutti gli esiti (chiusi, annullati, in corso).\n\nFormula: COUNT(record)\nPeriodo: '+document.querySelector('.pill.on')?.textContent},
+        {v:s.ch,      l:'Chiusi',    tip:'SdF CHIUSI — '+g.label+'\n\nSdF completati con risposta al cliente\no all\u2019operatore (CHIUSO).\nIndicatore primario di produttivit\u00e0.\n\nFormula: COUNT(esito = CHIUSO)\nSul totale: '+(s.pc)+'%'},
+        {v:s.pc+'%',  l:'% chiusi',  tip:'% CHIUSI — '+g.label+'\n\nPercentuale di SdF completati sul totale.\nMisura l\u2019efficienza di chiusura del gruppo.\n\nFormula: Chiusi ÷ Totali × 100\nTarget: > 80%\nValore attuale: '+s.pc+'%'},
+        {v:s.re,      l:'Retail',    tip:'RETAIL — '+g.label+'\n\nFattibilità per clienti finali diretti\n(non operatori TLC).\nCollegamenti residenziali o business diretti.\n\nFormula: COUNT(tipo = RETAIL)'},
+        {v:s.wh,      l:'Wholesale', tip:'WHOLESALE — '+g.label+'\n\nFattibilità per operatori TLC\ntramite interfacce NNI (Network-to-Network)\no IRP (Interconnection Reference Point).\n\nFormula: COUNT(tipo = WHOLESALE)'},
+        {v:s.ur,      l:'Urgenti',   tip:'URGENTI — '+g.label+'\n\nSdF con priorità URGENTE:\ntimeline di risposta ridotta,\ngestione prioritaria rispetto agli STD.\n\nFormula: COUNT(priorità = URGENTE)'},
+        {v:s.at!=null?s.at+'gg':'-',l:'Tempo med.',tip:'TEMPO MEDIO — '+g.label+'\n\nMedia dei giorni di lavorazione\ntra Data Mail (col.J) e Data Esito (col.K).\nModalità: '+(KPI_MODE==='solare'?'Giorni solari (inclusi weekend)':'Giorni lavorativi (esclusi sab, dom, festivi IT)')+'\n\nFormula: MEDIA(Esito − Mail)\nMeno giorni = risposta più rapida'},
+        {v:s.ps!=null?s.ps+'%':'-', l:'% scadenza',tip:'% IN TEMPO — '+g.label+'\n\nPercentuale di SdF chiusi ENTRO la scadenza\nindicata dal cliente.\nKPI critico per la qualità del servizio TIM.\n\nFormula: In Tempo ÷ Tot.con Scadenza × 100\nTarget: > 90%\nValore attuale: '+(s.ps!=null?s.ps+'%':'N/D (nessuna scadenza)')+'\n('+s.iy+' su '+s.itot+' con scadenza)'},
+        {v:s.di+s.ii, l:'Int. tot.', tip:'INTERVENTI TOTALI — '+g.label+'\n\nSomma degli interventi tecnici sui SdF:\n• Dim. ('+s.di+'): variazioni apparati/circuiti DWDM\n• Infra. ('+s.ii+'): lavori fisici DROP/posa cavi\n\nIndicatore di complessità tecnica del lavoro.\nFormula: Σ(dim) + Σ(infra)'},
+      ];
+      html2+='<div class="gkpi-card" style="border:2px solid '+g.border+';">';
+      html2+='<div class="gkpi-hdr" style="background:'+g.color+';">'+g.label+
+        ' <span style="font-weight:400;font-size:.68rem;opacity:.85;">'+
+        members.map(function(p){return p.name;}).join(', ')+'</span>'+
+        '<span style="margin-left:auto;font-weight:700;font-size:.78rem;">'+s.n+' SdF</span></div>';
+      html2+='<div class="gkpi-body">';
+      cells.forEach(function(cell){
+        html2+='<div class="gkpi-cell" data-tip="'+cell.tip+'">'+
+          '<div class="gkpi-v" style="color:'+g.color+';">'+cell.v+'</div>'+
+          '<div class="gkpi-l">'+cell.l+'</div></div>';
+      });
+      html2+='</div></div>';
+    });
+    wrap.innerHTML=html2||'<div class="empty" style="width:100%;">Nessun gruppo attivo</div>';
+  });
+}
+
+var GRP_CHART='bar';
+function setGrpChart(type,btn){
+  GRP_CHART=type;
+  document.querySelectorAll('#grpChartBtns .pill').forEach(function(p){p.classList.remove('on');});
+  btn.classList.add('on');
+  renderGrpChart(getFil());
+}
+function getGroups(data){
+  var gDef=[
+    {id:'sirti', label:'Sirti', color:'#0066CC',light:'#DBEAFE'},
+    {id:'huawei',label:'Huawei',color:'#E60028',light:'#FDE8EC'},
+    {id:'altro', label:'TIM',   color:'#2D8B57',light:'#D1FAE5'},
+  ];
+  return gDef.map(function(g){
+    var members=PEOPLE.filter(function(p){return p.gruppo===g.id&&ACTIVE.has(p.name);});
+    if(!members.length)return null;
+    var recs=data.filter(function(r){return members.some(function(p){return p.name===r.lavorante;});});
+    return {id:g.id,label:g.label,color:g.color,light:g.light,s:S(recs),members:members};
+  }).filter(Boolean);
+}
+function renderGruppi(){
+  var data=getFil();
+  renderGroupKpis(data);
+  renderGrpBars(data);
+  renderGrpChart(data);
+}
+function renderGrpBars(data){
+  var el=document.getElementById('grpBarsGrid');if(!el)return;
+  var groups=getGroups(data);
+  if(groups.length<2){el.innerHTML='<div class="empty">Almeno 2 gruppi attivi</div>';return;}
+  var metrics=[
+    {l:'SdF Totali', tip:'TOTALE SdF per gruppo\nNumero totale di SdF gestiti nel periodo.\nFormula: COUNT(record)\nConfronto: chi ha il volume maggiore?',
+     f:function(s){return s.n;}, fmt:function(s){return s.n;},
+     rtip:function(g,v,mx){return g.label+': '+v.fmt+' SdF\n'+Math.round(v.raw/mx*100)+'% del massimo\nFormula: COUNT(record)\nTarget: volume elevato = alta produttivit\u00e0';}},
+    {l:'Chiusi', tip:'SdF CHIUSI per gruppo\nSdF completati con risposta al cliente.\nTra parentesi la % sul totale del gruppo.\nFormula: COUNT(esito=CHIUSO)\nTarget: pi\u00f9 alto possibile',
+     f:function(s){return s.ch;},fmt:function(s){return s.ch+' ('+s.pc+'%)';},
+     rtip:function(g,v,mx){return g.label+': '+g.s.ch+' chiusi su '+g.s.n+' totali\nTasso completamento: '+g.s.pc+'%\nFormula: COUNT(esito=CHIUSO)\nTarget: > 80%';}},
+    {l:'Retail', tip:'RETAIL per gruppo\nFattibilit\u00e0 per clienti finali diretti\n(privati, aziende, PA).\nFormula: COUNT(tipo=RETAIL)',
+     f:function(s){return s.re;},fmt:function(s){return s.re;},
+     rtip:function(g,v,mx){return g.label+': '+v.fmt+' Retail\n'+Math.round(v.raw/mx*100)+'% del massimo\nFormula: COUNT(tipo=RETAIL)\nClienti finali diretti';}},
+    {l:'Wholesale', tip:'WHOLESALE per gruppo\nFattibilit\u00e0 per operatori TLC\ntramite NNI o IRP.\nFormula: COUNT(tipo=WHOLESALE)',
+     f:function(s){return s.wh;},fmt:function(s){return s.wh;},
+     rtip:function(g,v,mx){return g.label+': '+v.fmt+' Wholesale\n'+Math.round(v.raw/mx*100)+'% del massimo\nFormula: COUNT(tipo=WHOLESALE)\nOperatori TLC (NNI/IRP)';}},
+    {l:'Urgenti', tip:'URGENTI per gruppo\nSdF con priorit\u00e0 URGENTE:\ntimeline ridotta, gestione prioritaria.\nFormula: COUNT(priorit\u00e0=URGENTE)',
+     f:function(s){return s.ur;},fmt:function(s){return s.ur;},
+     rtip:function(g,v,mx){return g.label+': '+v.fmt+' urgenti su '+g.s.n+' totali\n('+Math.round(g.s.ur/Math.max(g.s.n,1)*100)+'% del totale)\nFormula: COUNT(priorit\u00e0=URGENTE)\nPriority SdF con deadline ridotta';}},
+    {l:'Tempo Med.', tip:'TEMPO MEDIO per gruppo\nMedia giorni di lavorazione\n(Data Mail \u2192 Data Esito).\nFormula: MEDIA(Esito \u2212 Mail)\nTarget: pi\u00f9 basso = pi\u00f9 veloce',
+     f:function(s){return s.at||0;},fmt:function(s){return s.at!=null?s.at+'gg':'-';},
+     rtip:function(g,v,mx){return g.label+': '+g.s.at+'gg medi\nModalit\u00e0: '+(KPI_MODE==='solare'?'Giorni solari':'Giorni lavorativi')+'\nFormula: MEDIA(Esito \u2212 Mail)\nTarget: pi\u00f9 basso possibile';}},
+    {l:'% Scadenza', tip:'% IN TEMPO per gruppo\nPercentuale SdF chiusi ENTRO la scadenza.\nKPI critico per la qualit\u00e0 del servizio TIM.\nFormula: InTempo \u00f7 TotConScad \u00d7 100\nTarget: > 90%',
+     f:function(s){return s.ps||0;},fmt:function(s){return s.ps!=null?s.ps+'%':'-';},
+     rtip:function(g,v,mx){return g.label+': '+g.s.ps+'% in tempo\n('+g.s.iy+' su '+g.s.itot+' con scadenza)\nFormula: InTempo \u00f7 TotConScad \u00d7 100\nTarget: > 90%\n'+(g.s.ps>=90?'\u2714 Obiettivo raggiunto':g.s.ps>=70?'\u26a0 Sotto target':'\u274c Criticit\u00e0 grave');}},
+    {l:'Int. Dim.', tip:'INTERVENTI DIMENSIONALI per gruppo\nVariazioni su apparati o circuiti DWDM.\nIndicatore di complessit\u00e0 tecnica.\nFormula: \u03a3(dim per SdF)',
+     f:function(s){return s.di;},fmt:function(s){return s.di;},
+     rtip:function(g,v,mx){return g.label+': '+v.fmt+' interventi dimensionali\n'+Math.round(v.raw/mx*100)+'% del massimo\nVariazioni apparati/circuiti DWDM\nMedia per SdF: '+(g.s.n>0?(v.raw/g.s.n).toFixed(1):'-');}},
+    {l:'Int. Infra.', tip:'INTERVENTI INFRASTRUTTURALI per gruppo\nLavori su infrastruttura fisica\n(DROP, posa cavi, cunicoli).\nFormula: \u03a3(infra per SdF)',
+     f:function(s){return s.ii;},fmt:function(s){return s.ii;},
+     rtip:function(g,v,mx){return g.label+': '+v.fmt+' interventi infrastrutturali\n'+Math.round(v.raw/mx*100)+'% del massimo\nLavori fisici DROP/posa cavi\nMedia per SdF: '+(g.s.n>0?(v.raw/g.s.n).toFixed(1):'-');}},
+  ];
+  el.innerHTML=metrics.map(function(m){
+    var vals=groups.map(function(g){
+      return{label:g.label,raw:m.f(g.s),fmt:m.fmt(g.s),col:g.color,bg:g.light,
+             rtip:m.rtip?m.rtip(g,{label:g.label,raw:m.f(g.s),fmt:m.fmt(g.s)},Math.max.apply(null,groups.map(function(gg){return m.f(gg.s);}))):'',s:g.s};
+    });
+    var mx=Math.max.apply(null,vals.map(function(v){return v.raw;}))||1;
+    return '<div class="bcard" data-tip="'+m.tip+'">'+
+      '<div class="bil" data-tip="'+m.tip+'">'+m.l+'</div>'+
+      vals.map(function(v){return '<div class="brow" data-tip="'+v.rtip+'">'+
+        '<span class="bnm" style="color:'+v.col+';background:'+v.bg+';padding:.08rem .35rem;border-radius:4px;font-weight:700;min-width:52px;text-align:center;" data-tip="'+v.rtip+'">'+v.label+'</span>'+
+        '<div class="btr" data-tip="'+v.rtip+'"><div class="bfi" style="width:'+Math.round(v.raw/mx*100)+'%;background:'+v.col+';"></div></div>'+
+        '<span class="bvl" style="color:'+v.col+';" data-tip="'+v.rtip+'">'+v.fmt+'</span>'+
+      '</div>';}).join('')+'</div>';
+  }).join('');
+}
+function renderGrpChart(data){
+  var el=document.getElementById('grpChartContainer');if(!el)return;
+  var groups=getGroups(data);
+  if(!groups.length){el.innerHTML='<div class="empty">Nessun gruppo attivo</div>';return;}
+  if(GRP_CHART==='bar'){
+    var M=[{k:'n',l:'SdF Tot.'},{k:'ch',l:'Chiusi'},{k:'re',l:'Retail'},
+           {k:'wh',l:'Wholesale'},{k:'ur',l:'Urgenti'},{k:'di',l:'Int.Dim.'},{k:'ii',l:'Int.Infra.'}];
+    var W=660,pL=36,pR=16,pT=28,pB=75,H=280+pB;
+    var cW=W-pL-pR,cH=280-pT,nM=M.length,nG=groups.length,gW=cW/nM;
+    var bW=Math.min(34,(gW-(nG+1)*4)/nG);
+    var svg='<svg width="100%" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" font-family="Inter,sans-serif" style="display:block;">';
+    svg+='<rect width="'+W+'" height="'+H+'" fill="#f9fafb" rx="6"/>';
+    svg+='<rect x="'+pL+'" y="'+pT+'" width="'+cW+'" height="'+cH+'" fill="white" rx="4" stroke="#e5e7eb" stroke-width="1"/>';
+    for(var gi=1;gi<=4;gi++){var gy=(pT+cH-gi/4*cH).toFixed(1);svg+='<line x1="'+pL+'" y1="'+gy+'" x2="'+(W-pR)+'" y2="'+gy+'" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="3,2"/>';}
+    var maxV=M.map(function(m){return Math.max.apply(null,groups.map(function(g){return g.s[m.k]||0;}))||1;});
+    M.forEach(function(m,mi){
+      var gx=pL+mi*gW,mx=maxV[mi],totW=nG*bW+(nG-1)*4,sx=gx+(gW-totW)/2;
+      svg+='<text x="'+(gx+gW/2).toFixed(1)+'" y="'+(pT+cH+13)+'" text-anchor="middle" font-size="9" fill="#6b7280">'+m.l+'</text>';
+      groups.forEach(function(g,pi){
+        var val=g.s[m.k]||0,bH=mx>0?(val/mx)*cH:0;
+        var bx=(sx+pi*(bW+4)).toFixed(1),by=(pT+cH-bH).toFixed(1);
+        svg+='<rect x="'+bx+'" y="'+by+'" width="'+bW+'" height="'+bH.toFixed(1)+'" rx="3" fill="'+g.color+'" fill-opacity="0.88" data-tip="'+g.label+': '+val+'"/>';
+        svg+='<text x="'+(parseFloat(bx)+bW/2).toFixed(1)+'" y="'+(bH>10?parseFloat(by)-4:parseFloat(by)-7)+'" text-anchor="middle" font-size="9" fill="'+(bH>10?'white':g.color)+'" font-weight="700">'+val+'</text>';
+      });
+    });
+    var lY=pT+cH+30;
+    groups.forEach(function(g,pi){var lx=pL+pi*150;svg+='<rect x="'+lx+'" y="'+(lY-1)+'" width="11" height="11" rx="3" fill="'+g.color+'"/><text x="'+(lx+14)+'" y="'+(lY+8)+'" font-size="10" fill="#374151" font-weight="700">'+g.label+'</text>';});
+    svg+='</svg>';
+    el.innerHTML='<div style="overflow-x:auto;border-radius:8px;border:1px solid #e5e7eb;">'+svg+'</div>';
+  } else {
+    var PM=[{l:'SdF Totali',f:function(s){return s.n;}},{l:'Chiusi',f:function(s){return s.ch;}},
+            {l:'Int.Dim.',f:function(s){return s.di;}},{l:'Int.Infra.',f:function(s){return s.ii;}}];
+    var R=68,pW=310,pH=235,cols=2,rows=2,SW=cols*pW,SH=rows*pH+44;
+    function a3(cx,cy,r,a1,a2){var x1=(cx+r*Math.cos(a1)).toFixed(2),y1=(cy+r*Math.sin(a1)).toFixed(2),x2=(cx+r*Math.cos(a2)).toFixed(2),y2=(cy+r*Math.sin(a2)).toFixed(2);return 'M'+cx+','+cy+' L'+x1+','+y1+' A'+r+','+r+' 0 '+(a2-a1>Math.PI?1:0)+',1 '+x2+','+y2+' Z';}
+    var svg='<svg width="100%" viewBox="0 0 '+SW+' '+SH+'" xmlns="http://www.w3.org/2000/svg" font-family="Inter,sans-serif" style="display:block;">';
+    svg+='<rect width="'+SW+'" height="'+SH+'" fill="#f9fafb" rx="6"/>';
+    PM.forEach(function(pm,idx){
+      var col=idx%cols,row=Math.floor(idx/cols),cx=col*pW+pW/2,cy=row*pH+pH/2+8;
+      svg+='<rect x="'+(col*pW+4)+'" y="'+(row*pH+4)+'" width="'+(pW-8)+'" height="'+(pH-8)+'" fill="white" rx="6" stroke="#e5e7eb" stroke-width="1"/>';
+      svg+='<text x="'+cx+'" y="'+(row*pH+20)+'" text-anchor="middle" font-size="11" fill="#374151" font-weight="700">'+pm.l+'</text>';
+      var vals=groups.map(function(g){return{label:g.label,v:pm.f(g.s),color:g.color};});
+      var tot=vals.reduce(function(a,v){return a+v.v;},0);
+      if(!tot){svg+='<text x="'+cx+'" y="'+cy+'" text-anchor="middle" font-size="10" fill="#9ca3af">N/D</text>';return;}
+      // Arco minimo 8° garantito per gruppi con 1 SdF (es. TIM)
+      var MIN_ARC_G=0.14, TWO_PI_G=2*Math.PI;
+      var smallG=vals.filter(function(v){return v.v>0&&(v.v/tot)*TWO_PI_G<MIN_ARC_G;}).length;
+      var extraG=smallG*MIN_ARC_G;
+      var bigTotG=vals.reduce(function(a,v){return a+(((v.v/tot)*TWO_PI_G>=MIN_ARC_G&&v.v>0)?v.v:0);},0);
+      var arcs=vals.map(function(v){
+        if(!v.v)return 0;
+        var nat=(v.v/tot)*TWO_PI_G;
+        return nat<MIN_ARC_G?MIN_ARC_G:(bigTotG>0?(v.v/bigTotG)*(TWO_PI_G-extraG):nat);
+      });
+      var ang=-Math.PI/2;
+      vals.forEach(function(v,vi){
+        if(!v.v)return;
+        var sl=arcs[vi],a1=ang,a2=ang+sl;ang+=sl;
+        var mid=a1+sl/2,pct=Math.round(v.v/tot*1000)/10;
+        svg+='<path d="'+a3(cx,cy,R,a1,a2)+'" fill="'+v.color+'" stroke="white" stroke-width="2.5" data-tip="'+v.label+': '+v.v+' ('+pct+'%)"/>';
+        if(sl>0.28){var ix=(cx+R*0.6*Math.cos(mid)).toFixed(1),iy=(cy+R*0.6*Math.sin(mid)).toFixed(1);svg+='<text x="'+ix+'" y="'+(parseFloat(iy)+5)+'" text-anchor="middle" font-size="13" fill="white" font-weight="900">'+v.label[0]+'</text>';}
+        svg+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(R*0.37)+'" fill="white"/>';
+        if(sl>0.05){var L=R+24,lx=(cx+L*Math.cos(mid)).toFixed(1),ly=(cy+L*Math.sin(mid)).toFixed(1),lx0=(cx+(R+2)*Math.cos(mid)).toFixed(1),ly0=(cy+(R+2)*Math.sin(mid)).toFixed(1),lx1=(cx+(L-7)*Math.cos(mid)).toFixed(1),ly1=(cy+(L-7)*Math.sin(mid)).toFixed(1),anc=parseFloat(lx)<cx?'end':'start';
+          svg+='<line x1="'+lx0+'" y1="'+ly0+'" x2="'+lx1+'" y2="'+ly1+'" stroke="'+v.color+'" stroke-width="1.2" opacity="0.8"/>';
+          svg+='<text x="'+lx+'" y="'+(parseFloat(ly)-1)+'" text-anchor="'+anc+'" font-size="10" fill="'+v.color+'" font-weight="800">'+pct+'%</text>';
+          svg+='<text x="'+lx+'" y="'+(parseFloat(ly)+11)+'" text-anchor="'+anc+'" font-size="9" fill="'+v.color+'" font-weight="700">'+v.label+'</text>';}
+      });
+      svg+='<text x="'+cx+'" y="'+(cy+5)+'" text-anchor="middle" font-size="16" fill="#1f2937" font-weight="900">'+tot+'</text>';
+    });
+    var lY=rows*pH+12,lW=groups.length*155,lX=(SW-lW)/2;
+    groups.forEach(function(g,pi){var lx=lX+pi*155;svg+='<rect x="'+lx.toFixed(1)+'" y="'+(lY-1)+'" width="11" height="11" rx="3" fill="'+g.color+'"/><text x="'+(lx+14)+'" y="'+(lY+8)+'" font-size="10" fill="#374151" font-weight="700">'+g.label+'</text>';});
+    svg+='</svg>';
+    el.innerHTML='<div style="overflow-x:auto;border-radius:8px;border:1px solid #e5e7eb;">'+svg+'</div>';
+  }
+}
+
+
+// === DETTAGLIO MENSILE ===
+function tlMonthDetail(btn){showMonthDetail(btn.dataset.ym,getFil());}
+function showMonthDetail(ym,data){
+  var MN=['','Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
+  var mo=parseInt(ym.slice(5,7)),y=ym.slice(0,4),label=MN[mo]+' '+y;
+  var recs=data.filter(function(r){return (r.data_mail||'').slice(0,7)===ym;});
+  if(!recs.length)recs=data.filter(function(r){return (r.data_esito||'').slice(0,7)===ym;});
+  var ap=PEOPLE.filter(function(p){return ACTIVE.has(p.name);});
+  var tot=recs.length;
+  var chiusi=recs.filter(function(r){return r.esito==='CHIUSO';}).length;
+  var annullati=recs.filter(function(r){return r.esito&&r.esito.indexOf('ANNULL')>=0;}).length;
+  var retail=recs.filter(function(r){return r.tipo==='RETAIL';}).length;
+  var wholesale=recs.filter(function(r){return r.tipo==='WHOLESALE';}).length;
+  var urgenti=recs.filter(function(r){return r.priorita==='URGENTE';}).length;
+  var pctCh=tot>0?Math.round(chiusi/tot*100):0;
+
+  var personData=[];
+  ap.forEach(function(p){
+    var pr=recs.filter(function(r){return r.lavorante===p.name;});
+    if(!pr.length)return;
+    var s=S(pr);
+    var byDay={};pr.forEach(function(r){var d=(r.data_mail||'').slice(8,10);if(d)byDay[d]=(byDay[d]||0)+1;});
+    var topDay=Object.keys(byDay).sort(function(a,b){return byDay[b]-byDay[a];})[0];
+    personData.push({p:p,s:s,n:pr.length,topDay:topDay,topN:topDay?byDay[topDay]:0});
+  });
+  personData.sort(function(a,b){return b.n-a.n;});
+
+  var gDef=[
+    {id:'sirti',label:'\uD83D\uDD35 Sirti',color:'#0066CC',light:'#DBEAFE'},
+    {id:'huawei',label:'\uD83D\uDD34 Huawei',color:'#E60028',light:'#FDE8EC'},
+    {id:'altro',label:'\uD83D\uDFE2 TIM',color:'#2D8B57',light:'#D1FAE5'},
+  ];
+  var gData=gDef.map(function(g){
+    var gr=recs.filter(function(r){var p=ap.find(function(p){return p.name===r.lavorante;});return p&&p.gruppo===g.id;});
+    if(!gr.length)return null;
+    return {id:g.id,label:g.label,color:g.color,light:g.light,s:S(gr),n:gr.length,recs:gr};
+  }).filter(Boolean);
+
+  var clientiCount={},provCount={},dayCount={};
+  recs.forEach(function(r){
+    if(r.cliente)clientiCount[r.cliente]=(clientiCount[r.cliente]||0)+1;
+    if(r.prov)provCount[r.prov]=(provCount[r.prov]||0)+1;
+    var d=(r.data_mail||'').slice(8,10);if(d)dayCount[d]=(dayCount[d]||0)+1;
+  });
+  var topClienti=Object.keys(clientiCount).sort(function(a,b){return clientiCount[b]-clientiCount[a];}).slice(0,8);
+  var topProv=Object.keys(provCount).sort(function(a,b){return provCount[b]-provCount[a];}).slice(0,12);
+  var topDays=Object.keys(dayCount).sort(function(a,b){return dayCount[b]-dayCount[a];}).slice(0,3);
+
+  var colors={sirti:'#0066CC',huawei:'#E60028',altro:'#2D8B57'};
+  var bgs={sirti:'#DBEAFE',huawei:'#FDE8EC',altro:'#D1FAE5'};
+  var gLabels={sirti:'Sirti',huawei:'Huawei',altro:'TIM'};
+  var h='';
+
+  h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.65rem;">';
+  h+='<div><h3 style="margin:0;font-size:1rem;color:#111827;" data-tip="Resoconto SdF di '+label+' (Data Mail)">\uD83D\uDCC5 '+label+' \u2014 Dettaglio mensile</h3>';
+  h+='<div style="font-size:.68rem;color:#9ca3af;">'+tot+' SdF \u2022 '+personData.length+' risorse \u2022 '+gData.length+' gruppi</div></div>';
+  h+='<button onclick="document.getElementById(\'monthMovo\').style.display=\'none\'" data-tip="Chiudi (o clicca fuori)" style="background:#f3f4f6;border:none;border-radius:8px;padding:.28rem .65rem;font-size:.78rem;cursor:pointer;color:#374151;font-weight:600;">\u2715 Chiudi</button>';
+  h+='</div>';
+
+  h+='<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:.3rem;margin-bottom:.65rem;">';
+  [{l:'SdF Totali',v:tot,c:'#0066CC',bg:'#EFF6FF',tip:'SdF ricevuti nel mese (Data Mail)'},
+   {l:'Chiusi '+pctCh+'%',v:chiusi,c:'#15803d',bg:'#F0FDF4',tip:'Completati (target >80%)'},
+   {l:'Annullati',v:annullati,c:annullati>0?'#E60028':'#6b7280',bg:annullati>0?'#FEF2F2':'#F9FAFB',tip:'SdF stornati prima della risposta'},
+   {l:'Retail',v:retail,c:'#0066CC',bg:'#EFF6FF',tip:'Fattibilit\u00e0 clienti finali'},
+   {l:'Wholesale',v:wholesale,c:'#7C3AED',bg:'#F5F3FF',tip:'Fattibilit\u00e0 operatori TLC'},
+   {l:'Urgenti',v:urgenti,c:urgenti>0?'#E60028':'#6b7280',bg:urgenti>0?'#FEF2F2':'#F9FAFB',tip:'Priorit\u00e0 URGENTE'},
+  ].forEach(function(st){
+    h+='<div data-tip="'+st.tip+'" style="text-align:center;background:'+st.bg+';border-radius:8px;padding:.32rem;border:1px solid rgba(0,0,0,.06);">';
+    h+='<div style="font-size:1.15rem;font-weight:800;color:'+st.c+';">'+st.v+'</div>';
+    h+='<div style="font-size:.58rem;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.04em;">'+st.l+'</div>';
+    h+='</div>';
+  });
+  h+='</div>';
+
+  h+='<div style="margin-bottom:.65rem;">';
+  h+='<div data-tip="KPI per ogni risorsa nel mese (ordinati per volume)" style="font-weight:800;font-size:.76rem;color:#374151;margin-bottom:.3rem;padding-bottom:.18rem;border-bottom:2px solid #e5e7eb;">\uD83D\uDC64 KPI per Risorsa</div>';
+  h+='<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:.71rem;">';
+  h+='<thead><tr style="background:#f8fafc;">';
+  [{c:'Risorsa',tip:'Lavorante'},{c:'Grp',tip:'Gruppo'},{c:'SdF',tip:'Totale SdF'},
+   {c:'Chiusi',tip:'Esito CHIUSO'},{c:'%Ch',tip:'% chiusi (target >80%)'},
+   {c:'Retail',tip:'Clienti finali'},{c:'WH',tip:'Wholesale (NNI/IRP)'},
+   {c:'Urg',tip:'Priorit\u00e0 URGENTE'},
+   {c:'Solari',tip:'Tempo medio giorni SOLARI (Data Mail \u2192 Data Esito)'},
+   {c:'Lavorativi',tip:'Tempo medio giorni LAVORATIVI (esclusi sab, dom, festivi IT)'},
+   {c:'%Scad',tip:'% chiusi entro scadenza (target >90%)'},
+   {c:'Dim.',tip:'Interventi dimensionali'},{c:'Inf.',tip:'Interventi infrastrutturali'},
+   {c:'Top gg',tip:'Giorno del mese con pi\u00f9 SdF'},
+  ].forEach(function(col){
+    h+='<th data-tip="'+col.tip+'" style="padding:.22rem .35rem;text-align:center;font-size:.64rem;color:#6b7280;font-weight:700;border-bottom:2px solid #e5e7eb;white-space:nowrap;">'+col.c+'</th>';
+  });
+  h+='</tr></thead><tbody>';
+  personData.forEach(function(pd,ri){
+    var p=pd.p,s=pd.s,bg=ri%2===0?'#fff':'#f9fafb';
+    var col=colors[p.gruppo]||'#374151',pbg=bgs[p.gruppo]||'#f3f4f6';
+    h+='<tr style="background:'+bg+';" data-tip="'+p.name+' \u2014 '+label+'">';
+    h+='<td style="padding:.22rem .35rem;font-weight:700;color:'+col+';">'+p.name+'</td>';
+    h+='<td style="padding:.22rem .35rem;text-align:center;"><span style="background:'+pbg+';color:'+col+';padding:.04rem .28rem;border-radius:10px;font-size:.63rem;font-weight:700;">'+gLabels[p.gruppo]+'</span></td>';
+    h+='<td style="padding:.22rem .35rem;text-align:center;font-weight:800;color:'+col+';">'+s.n+'</td>';
+    h+='<td style="padding:.22rem .35rem;text-align:center;font-weight:700;color:#15803d;">'+s.ch+'</td>';
+    h+='<td style="padding:.22rem .35rem;text-align:center;font-weight:700;color:'+(s.pc>=80?'#15803d':s.pc>=60?'#B45309':'#E60028')+';">'+s.pc+'%</td>';
+    h+='<td style="padding:.22rem .35rem;text-align:center;">'+s.re+'</td>';
+    h+='<td style="padding:.22rem .35rem;text-align:center;">'+s.wh+'</td>';
+    h+='<td style="padding:.22rem .35rem;text-align:center;color:'+(s.ur>0?'#E60028':'#374151')+';">'+s.ur+'</td>';
+    // SOLARI e LAVORATIVI separati
+    var recs_p=recs.filter(function(r){return r.lavorante===p.name;});
+    var tgSum=0,tgN=0,twSum=0,twN=0;
+    recs_p.forEach(function(r){if(r.tempo_gg!=null){tgSum+=r.tempo_gg;tgN++;}if(r.tempo_lav!=null){twSum+=r.tempo_lav;twN++;}});
+    var tgAvg=tgN?Math.round(tgSum/tgN):null;
+    var twAvg=twN?Math.round(twSum/twN):null;
+    h+='<td data-tip="Giorni SOLARI medi&#10;= MEDIA(Esito \u2212 Mail)&#10;Include sab, dom, festivi" style="padding:.22rem .35rem;text-align:center;font-weight:600;color:#B45309;">'+(tgAvg!=null?tgAvg+'gg':'-')+'</td>';
+    h+='<td data-tip="Giorni LAVORATIVI medi&#10;= MEDIA(Esito \u2212 Mail)&#10;Esclusi sab, dom, festivi IT" style="padding:.22rem .35rem;text-align:center;font-weight:600;color:#0066CC;">'+(twAvg!=null?twAvg+'gg':'-')+'</td>';
+    h+='<td style="padding:.22rem .35rem;text-align:center;font-weight:700;color:'+(s.ps!=null?(s.ps>=90?'#15803d':s.ps>=70?'#B45309':'#E60028'):'#9ca3af')+'">'+(s.ps!=null?s.ps+'%':'\u2014')+'</td>';
+    h+='<td style="padding:.22rem .35rem;text-align:center;">'+s.di+'</td>';
+    h+='<td style="padding:.22rem .35rem;text-align:center;">'+s.ii+'</td>';
+    h+='<td style="padding:.22rem .35rem;text-align:center;font-size:.65rem;color:#6b7280;">'+(pd.topDay?pd.topDay+'\u00ba('+pd.topN+')':'-')+'</td>';
+    h+='</tr>';
+  });
+  var totS=S(recs);
+  var tgSumT=0,tgNT=0,twSumT=0,twNT=0;
+  recs.forEach(function(r){if(r.tempo_gg!=null){tgSumT+=r.tempo_gg;tgNT++;}if(r.tempo_lav!=null){twSumT+=r.tempo_lav;twNT++;}});
+  h+='<tr style="background:#EFF6FF;font-weight:800;border-top:2px solid #0066CC;">';
+  h+='<td style="padding:.22rem .35rem;color:#0066CC;">TOTALE</td><td style="text-align:center;font-size:.62rem;color:#9ca3af;">\u2014</td>';
+  h+='<td style="padding:.22rem .35rem;text-align:center;color:#0066CC;">'+totS.n+'</td>';
+  h+='<td style="padding:.22rem .35rem;text-align:center;color:#15803d;">'+totS.ch+'</td>';
+  h+='<td style="padding:.22rem .35rem;text-align:center;color:'+(totS.pc>=80?'#15803d':'#E60028')+';">'+totS.pc+'%</td>';
+  h+='<td style="padding:.22rem .35rem;text-align:center;">'+totS.re+'</td><td style="padding:.22rem .35rem;text-align:center;">'+totS.wh+'</td>';
+  h+='<td style="padding:.22rem .35rem;text-align:center;color:#E60028;">'+totS.ur+'</td>';
+  h+='<td style="padding:.22rem .35rem;text-align:center;color:#B45309;">'+(tgNT?Math.round(tgSumT/tgNT)+'gg':'-')+'</td>';
+  h+='<td style="padding:.22rem .35rem;text-align:center;color:#0066CC;">'+(twNT?Math.round(twSumT/twNT)+'gg':'-')+'</td>';
+  h+='<td style="padding:.22rem .35rem;text-align:center;color:'+(totS.ps!=null?(totS.ps>=90?'#15803d':'#E60028'):'#9ca3af')+'">'+(totS.ps!=null?totS.ps+'%':'\u2014')+'</td>';
+  h+='<td style="padding:.22rem .35rem;text-align:center;">'+totS.di+'</td><td style="padding:.22rem .35rem;text-align:center;">'+totS.ii+'</td><td></td>';
+  h+='</tr></tbody></table></div></div>';
+
+  h+='<div style="display:grid;grid-template-columns:repeat('+gData.length+',1fr) 1fr 1fr;gap:.5rem;">';
+  gData.forEach(function(g){
+    var gs=g.s;
+    h+='<div data-tip="'+g.label+' \u2014 '+label+'" style="border:2px solid '+g.color+';border-radius:8px;overflow:hidden;">';
+    h+='<div style="background:'+g.color+';color:#fff;padding:.28rem .55rem;font-weight:800;font-size:.72rem;display:flex;justify-content:space-between;">'+g.label+'<span style="font-size:.66rem;opacity:.9;">'+g.n+' \u2022 '+Math.round(g.n/tot*100)+'%</span></div>';
+    h+='<div style="padding:.3rem .5rem;background:'+g.light+';display:grid;grid-template-columns:1fr 1fr;gap:.07rem .35rem;font-size:.69rem;">';
+    // Calcola media lavorativi per il gruppo
+    var twS2=0,twN2=0;g.recs?g.recs.forEach(function(r){if(r.tempo_lav!=null){twS2+=r.tempo_lav;twN2++;}}):0;
+    var gLavAvg=twN2?Math.round(twS2/twN2):null;
+    [{l:'Chiusi',v:gs.ch+' ('+gs.pc+'%)',tip:'SdF completati (esito=CHIUSO)'},
+     {l:'Annullati',v:gs.an,tip:'SdF stornati prima della chiusura'},
+     {l:'Retail',v:gs.re,tip:'Fattibilit\u00e0 clienti finali'},
+     {l:'Wholesale',v:gs.wh,tip:'Fattibilit\u00e0 operatori TLC (NNI/IRP)'},
+     {l:'Urgenti',v:gs.ur,tip:'Priorit\u00e0 URGENTE'},
+     {l:'Standard',v:gs.st,tip:'Priorit\u00e0 STANDARD'},
+     {l:'Solari',v:gs.at!=null?gs.at+'gg':'-',tip:'Tempo medio giorni SOLARI&#10;(inclusi sab, dom, festivi)'},
+     {l:'Lavorativi',v:gLavAvg!=null?gLavAvg+'gg':'-',tip:'Tempo medio giorni LAVORATIVI&#10;(esclusi sab, dom, festivi IT)'},
+     {l:'% Scad.',v:gs.ps!=null?gs.ps+'%':'\u2014',tip:'% SdF chiusi entro scadenza (target >90%)'},
+     {l:'Int.Dim.',v:gs.di,tip:'Interventi dimensionali (DWDM)'},
+     {l:'Int.Infra.',v:gs.ii,tip:'Interventi infrastrutturali (DROP/posa)'},
+    ].forEach(function(kv){
+      h+='<span data-tip="'+kv.tip+'" style="color:#6b7280;">'+kv.l+'</span><span style="font-weight:700;color:'+g.color+';">'+kv.v+'</span>';
+    });
+    h+='</div></div>';
+  });
+
+  if(topDays.length){
+    h+='<div data-tip="Giorni del mese con pi\u00f9 SdF ricevuti (Data Mail). Indica i picchi di carico.">';
+    h+='<div style="font-weight:800;font-size:.76rem;color:#374151;margin-bottom:.3rem;padding-bottom:.18rem;border-bottom:2px solid #e5e7eb;">\uD83D\uDCC6 Picchi giornalieri</div>';
+    topDays.forEach(function(d,di){
+      var icons=['\uD83E\uDD47','\uD83E\uDD48','\uD83E\uDD49'];
+      h+='<div data-tip="Giorno '+d+' '+label+': '+dayCount[d]+' SdF" style="display:flex;align-items:center;gap:.4rem;padding:.2rem .3rem;background:'+(di===0?'#FEF9C3':'#f9fafb')+';border:1px solid '+(di===0?'#CA8A04':'#e5e7eb')+';border-radius:6px;margin-bottom:.25rem;">';
+      h+=icons[di]+'<strong style="font-size:.82rem;">'+d+'\u00b0</strong><span style="margin-left:auto;font-weight:700;font-size:.78rem;">'+dayCount[d]+' SdF</span></div>';
+    });
+    h+='</div>';
+  }
+
+  h+='<div>';
+  if(topProv.length){
+    h+='<div data-tip="Province con pi\u00f9 SdF nel mese" style="font-weight:800;font-size:.76rem;color:#374151;margin-bottom:.25rem;padding-bottom:.18rem;border-bottom:2px solid #e5e7eb;">\uD83D\uDCCD Province</div>';
+    h+='<div style="display:flex;flex-wrap:wrap;gap:.2rem;margin-bottom:.45rem;">';
+    topProv.forEach(function(pv){
+      h+='<span data-tip="'+pv+': '+provCount[pv]+' SdF" style="background:#f3f4f6;border:1px solid #e5e7eb;border-radius:14px;padding:.1rem .4rem;font-size:.68rem;font-weight:600;">'+pv+' <strong>'+provCount[pv]+'</strong></span>';
+    });
+    h+='</div>';
+  }
+  if(topClienti.length){
+    h+='<div data-tip="Top clienti del mese" style="font-weight:800;font-size:.76rem;color:#374151;margin-bottom:.25rem;padding-bottom:.18rem;border-bottom:2px solid #e5e7eb;">\uD83C\uDFDB Top Clienti</div>';
+    topClienti.forEach(function(cl,ci){
+      h+='<div data-tip="'+cl+': '+clientiCount[cl]+' SdF" style="display:flex;align-items:center;gap:.3rem;padding:.12rem 0;'+(ci<topClienti.length-1?'border-bottom:1px solid #f3f4f6;':'')+'">';
+      h+='<span style="font-size:.61rem;color:#9ca3af;min-width:13px;font-weight:700;">'+(ci+1)+'</span>';
+      h+='<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.7rem;">'+cl+'</span>';
+      h+='<span style="background:#EFF6FF;border-radius:8px;padding:.03rem .3rem;font-weight:700;color:#0066CC;font-size:.66rem;">'+clientiCount[cl]+'</span>';
+      h+='</div>';
+    });
+  }
+  h+='</div>';
+  h+='</div>';
+
+  document.getElementById('monthModalContent').innerHTML=h;
+  document.getElementById('monthMovo').style.display='flex';
+}
+
 function showSec(id,btn){
   document.querySelectorAll('.stab').forEach(function(b){b.classList.remove('on');});
   document.querySelectorAll('.spane').forEach(function(p){p.classList.remove('on');});
   btn.classList.add('on');document.getElementById('sec-'+id).classList.add('on');
   if(id==='grafici')setTimeout(renderCharts,30);
+  if(id==='gruppi')setTimeout(renderGruppi,30);
 }
 
 // ═══ MODAL ═══
@@ -1462,6 +2161,8 @@ document.addEventListener('keydown',function(e){
 });
 
 // ═══ DRAG DROP ═══
+document.addEventListener('click',function(e){var btn=e.target.closest('.tl-detail-btn');if(btn)showMonthDetail(btn.dataset.ym,getFil());});
+
 var dz=document.getElementById('dropZone');
 if(dz){
   dz.addEventListener('dragover',function(e){e.preventDefault();dz.classList.add('drag');});
@@ -1509,8 +2210,8 @@ async function exportExcel(){
   var MN=['','Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
 
   var wb=new ExcelJS.Workbook();
-  wb.creator='KPI Monitor - Sirti @ TIM';
-  wb.lastModifiedBy='KPI Monitor';
+  wb.creator='Lupoli Giuseppe';
+  wb.lastModifiedBy='Lupoli Giuseppe';
   wb.created=new Date();
   wb.modified=new Date();
 
@@ -2008,7 +2709,7 @@ async function exportExcel(){
     ['TENUTA (Huawei)','','#BE185D','','\uD83D\uDFE3 Fucsia/rosa'],
     [],
     ['CONTATTI','','','',''],
-    ['Sviluppato da:','','Giuseppe Lupoli (Sirti @ TIM)','',''],
+    ['Sviluppato da:','','Lupoli Giuseppe — Sirti @ TIM','',''],
     ['Commessa:','','Sirti S.p.A. per Telecom Italia \u2014 Gestione SdF Rete Ottica','',''],
   ];
   var isHdr=[true,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false];
@@ -2036,4 +2737,4 @@ async function exportExcel(){
 }
 </script>
 </body>
-</html>
+</html><script>document.getElementById("monthMovo").addEventListener("click",function(e){if(e.target===this)this.style.display="none";});</script>
