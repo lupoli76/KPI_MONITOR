@@ -2224,16 +2224,22 @@ async function exportExcel(){
     PURPLE:'7C3AED',PURPLE_L:'EDE9FE',
     GRAY_H:'374151',GRAY_L:'F3F4F6',GRAY_LL:'F9FAFB',
     GRAY_B:'D1D5DB',WHITE:'FFFFFF',BLACK:'111827',
-    // Colori persona
-    LUPOLI:'0066CC',FEROCI:'0369A1',
-    CECCHETTO:'991B1B',GENTILE:'C2560E',IMPERATORI:'78350F',TENUTA:'831843',
+    // Colori persona PASTELLO (per grafici Excel - chiari e leggibili)
+    LUPOLI:'5B9BD5',FEROCI:'9DC3E6',
+    CECCHETTO:'FF7575',GENTILE:'FF85C2',IMPERATORI:'FFD966',TENUTA:'FFB347',
+    ANGOTTI:'70AD47',
+    // Colori pastello background per barre
+    LUPOLI_BG:'D6E4F7',FEROCI_BG:'DEEBF7',
+    CECCHETTO_BG:'FFD9D9',GENTILE_BG:'FFD9EC',IMPERATORI_BG:'FFF2CC',TENUTA_BG:'FFE8C2',
+    ANGOTTI_BG:'D4EDBC',
   };
 
   function pColor(name){
-    return C[name.toUpperCase()]||C.GRAY_H;
+    var map={LUPOLI:'2E75B6',FEROCI:'5B9BD5',CECCHETTO:'C00000',GENTILE:'953759',IMPERATORI:'C09010',TENUTA:'E36C09',ANGOTTI:'375623'};
+    return map[name.toUpperCase()]||C.GRAY_H;
   }
   function pBg(name){
-    var map={LUPOLI:'DBEAFE',FEROCI:'E0F2FE',CECCHETTO:'FEE2E2',GENTILE:'FFEDD5',IMPERATORI:'FEF9C3',TENUTA:'FCE7F3'};
+    var map={LUPOLI:'D6E4F7',FEROCI:'DEEBF7',CECCHETTO:'FFD9D9',GENTILE:'FFD9EC',IMPERATORI:'FFF2CC',TENUTA:'FFE8C2',ANGOTTI:'D4EDBC'};
     return map[name.toUpperCase()]||C.GRAY_L;
   }
 
@@ -2666,18 +2672,69 @@ async function exportExcel(){
   });
   ws4.views=[{state:'frozen',ySplit:3}];
 
+
+  // ═══════════════════════════════════════════
+  // FOGLIO 5 — KPI GRUPPI
+  // ═══════════════════════════════════════════
+  var ws5g=wb.addWorksheet('👥 KPI Gruppi',{
+    properties:{tabColor:{argb:'FF2D8B57'}}
+  });
+  ws5g.columns=[
+    {width:22},{width:28},{width:13},{width:13},{width:9},{width:13},{width:13},{width:11},{width:13},{width:13},{width:13},{width:11},{width:11}
+  ];
+  var gDefX=[
+    {id:'sirti', label:'Sirti',  color:'2E75B6',bg:'D6E4F7',mbg:'EFF6FF'},
+    {id:'huawei',label:'Huawei', color:'C00000',bg:'FFD9D9',mbg:'FEF2F2'},
+    {id:'altro', label:'TIM',    color:'375623',bg:'D4EDBC',mbg:'F0FDF4'},
+  ];
+  ws5g.addRow(['👥 KPI per Gruppo — '+pRange]);
+  ws5g.mergeCells('A1:M1');
+  styleHdr(ws5g.getRow(1).getCell(1),'FFFFFF','2D8B57',14,'left');
+  ws5g.addRow(['Generato: '+genDate]);
+  ws5g.mergeCells('A2:M2');
+  styleCell(ws5g.getRow(2).getCell(1),'6B7280','F9FAFB',false,'left');
+  ws5g.addRow([]);
+  var gHdrCols=['Gruppo','Membri','SdF Tot.','Chiusi','%Ch','Retail','Wholesale','Urgenti','T.Solare','T.Lavorativo','%Scadenza','Int.Dim.','Int.Infra.'];
+  var gHdrRow=ws5g.addRow(gHdrCols);
+  var gHdrColors=['2D8B57','2D8B57','2E75B6','375623','375623','2E75B6','7030A0','C00000','E36C09','2E75B6','375623','6B7280','6B7280'];
+  gHdrCols.forEach(function(_,ci){styleHdr(gHdrRow.getCell(ci+1),'FFFFFF',gHdrColors[ci],10,'center');});
+  ws5g.getRow(4).height=20;
+  gDefX.forEach(function(g){
+    var gRecs=data.filter(function(r){return PEOPLE.find(function(p){return p.name===r.lavorante&&p.gruppo===g.id;});});
+    if(!gRecs.length)return;
+    var gs2=S(gRecs);
+    var members=PEOPLE.filter(function(p){return p.gruppo===g.id&&ACTIVE.has(p.name);}).map(function(p){return p.name;}).join(', ');
+    var tw=0,tn=0;gRecs.forEach(function(r){if(r.tempo_lav!=null){tw+=r.tempo_lav;tn++;}});
+    var gRow=ws5g.addRow([g.label,members,gs2.n,gs2.ch,(gs2.pc||0)+'%',gs2.re,gs2.wh,gs2.ur,
+      gs2.at!=null?gs2.at+'gg':'-',tn?Math.round(tw/tn)+'gg':'-',gs2.ps!=null?gs2.ps+'%':'-',gs2.di,gs2.ii]);
+    for(var ci=1;ci<=13;ci++){styleCell(gRow.getCell(ci),g.color,g.bg,ci<=2,ci<=2?'left':'center');}
+    ws5g.getRow(ws5g.rowCount).height=20;
+    PEOPLE.filter(function(p){return p.gruppo===g.id&&ACTIVE.has(p.name);}).forEach(function(p){
+      var ps2=S(data.filter(function(r){return r.lavorante===p.name;}));
+      var pt=0,pn=0;data.filter(function(r){return r.lavorante===p.name;}).forEach(function(r){if(r.tempo_lav!=null){pt+=r.tempo_lav;pn++;}});
+      var pRow=ws5g.addRow(['  → '+p.name,'('+g.label+')',ps2.n,ps2.ch,(ps2.pc||0)+'%',
+        ps2.re,ps2.wh,ps2.ur,ps2.at!=null?ps2.at+'gg':'-',pn?Math.round(pt/pn)+'gg':'-',
+        ps2.ps!=null?ps2.ps+'%':'-',ps2.di,ps2.ii]);
+      for(var ci=1;ci<=13;ci++){styleCell(pRow.getCell(ci),g.color,g.mbg,false,ci<=2?'left':'center');}
+      ws5g.getRow(ws5g.rowCount).height=16;
+    });
+    ws5g.addRow([]);
+  });
+  ws5g.views=[{state:'frozen',ySplit:4}];
+
+
   // ═══════════════════════════════════════════
   // FOGLIO 5 — LEGENDA
   // ═══════════════════════════════════════════
-  var ws5=wb.addWorksheet('\uD83D\uDCD6 Legenda',{
+  var ws6=wb.addWorksheet('\uD83D\uDCD6 Legenda',{
     properties:{tabColor:{argb:'FF92400E'}}
   });
-  ws5.columns=[{width:22},{width:4},{width:47},{width:4},{width:57}];
+  ws6.columns=[{width:22},{width:4},{width:47},{width:4},{width:57}];
 
-  ws5.mergeCells('A1:E1');
-  var lt=ws5.getCell('A1'); lt.value='LEGENDA COMPLETA \u2014 KPI Monitor Sirti @ TIM';
-  styleTitle(lt); ws5.getRow(1).height=26;
-  ws5.addRow([]);
+  ws6.mergeCells('A1:E1');
+  var lt=ws6.getCell('A1'); lt.value='LEGENDA COMPLETA \u2014 KPI Monitor Sirti @ TIM';
+  styleTitle(lt); ws6.getRow(1).height=26;
+  ws6.addRow([]);
 
   var legData=[
     ['ABBREVIAZIONI','','SIGNIFICATO','','DESCRIZIONE ESTESA'],
@@ -2714,8 +2771,8 @@ async function exportExcel(){
   ];
   var isHdr=[true,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,true,false,false,false,false,false,false,false,true,false,false];
   legData.forEach(function(row,ri){
-    var exRow=ws5.addRow(row);
-    ws5.getRow(ri+3).height=15;
+    var exRow=ws6.addRow(row);
+    ws6.getRow(ri+3).height=15;
     if(isHdr[ri]&&row[0]){
       [1,2,3,4,5].forEach(function(ci){styleSectionHdr(exRow.getCell(ci));});
     } else if(row[0]) {
