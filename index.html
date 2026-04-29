@@ -485,11 +485,13 @@ tbody tr:nth-child(even){background:rgba(0,0,0,.01);}
 
       </div>
 
-      <!-- LEGENDA INTEGRATA -->
+    </div><!-- fine card Periodo di analisi -->
+
     <div class="sh">📊 KPI Aggregati <span class="sh-info" data-tip="Indicatori chiave per le risorse attive&#10;nel periodo selezionato.&#10;Hover su ogni box per la formula.">i</span></div>
     <div class="card" style="margin-bottom:.6rem;"><div class="kg" id="kpiGlobal"></div></div>
 
     <!-- SEZIONI -->
+    <div class="sh">📂 Sezioni <span class="sh-info" data-tip="Naviga tra le viste disponibili.&#10;I filtri si applicano a tutte le sezioni.">i</span></div>
     <div class="sn">
       <button class="stab on" onclick="showSec('persone',this)"
         data-tip="Schede individuali per risorsa&#10;con KPI, barre relative&#10;e indicatori di performance">👤 Per Persona</button>
@@ -599,7 +601,7 @@ tbody tr:nth-child(even){background:rgba(0,0,0,.01);}
 
     <!-- GUIDA -->
     <div class="spane" id="sec-guida">
-      <div style="max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:.75rem;padding:.2rem;">
+      <div style="display:flex;flex-direction:column;gap:.75rem;padding:.2rem;">
 
         <!-- ❶ AVVIO RAPIDO -->
         <div class="card" style="border-left:4px solid #0066CC;">
@@ -1305,7 +1307,7 @@ function renderTL(data){
   var el=document.getElementById('tlWrap');
   var mm={};
   data.forEach(function(r){
-    var d=r.data_esito||r.data_mail;if(!d||!d.match(/^\d{4}-\d{2}-\d{2}/))return;
+    var d=r.data_mail||r.data_esito;if(!d||!d.match(/^\d{4}-\d{2}-\d{2}/))return;
     var ym=d.slice(0,7);if(!mm[ym])mm[ym]={};
     if(!mm[ym][d])mm[ym][d]=[];mm[ym][d].push(r);
   });
