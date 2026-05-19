@@ -1022,7 +1022,7 @@ function parseXL(ab,fname){
         if(!mp)continue;
         function dv(i){
           var v=r[i];if(!v&&v!==0)return null;
-          if(v instanceof Date)return v.toISOString().slice(0,10);
+          if(v instanceof Date){var yy=v.getFullYear(),mm=('0'+(v.getMonth()+1)).slice(-2),dd=('0'+v.getDate()).slice(-2);return yy+'-'+mm+'-'+dd;}
           var s=String(v).trim();
           if(s.match(/^\d{4}-\d{2}-\d{2}/))return s.slice(0,10);
           var m2=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
